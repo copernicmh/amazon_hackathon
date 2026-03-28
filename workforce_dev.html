@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Community Bridge</title>
+<title>CommunityBridge</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -53,13 +56,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.95);backdrop
 .hv-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.3)}
 .hv-title{font-size:12px;color:rgba(255,255,255,0.9);font-weight:500}
 .hv-body{padding:16px}
-.map-mock{background:linear-gradient(135deg,#dff5ec,#e8f3fb,#eef0f8);border-radius:8px;height:180px;position:relative;overflow:hidden;margin-bottom:12px}
-.map-road{position:absolute;background:rgba(255,255,255,0.5);border-radius:1px}
-.map-pin{position:absolute;width:26px;height:26px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
-.pin-g{background:var(--green)}
-.pin-b{background:var(--blue)}
-.pin-a{background:var(--amber)}
-.pin-p{background:var(--purple)}
+#map{background:var(--paper-m);border-radius:8px;height:180px;position:relative;overflow:hidden;margin-bottom:12px;z-index:1}
 .ai-chip{background:var(--green-l);border:1px solid var(--green-m);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-d)}
 .ai-chip strong{font-weight:500}
 .chip-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
@@ -252,20 +249,10 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
     <div class="hero-visual">
       <div class="hv-header">
         <div class="hv-dots"><div class="hv-dot"></div><div class="hv-dot"></div><div class="hv-dot"></div></div>
-        <div class="hv-title">Resource Map — Hampton Roads, VA</div>
+        <div class="hv-title">USDA SNAP Retailer Locator — Hampton Roads, VA</div>
       </div>
       <div class="hv-body">
-        <div class="map-mock">
-          <div class="map-road" style="top:35%;left:0;width:100%;height:3px;transform:rotate(-2deg)"></div>
-          <div class="map-road" style="top:60%;left:0;width:100%;height:2px"></div>
-          <div class="map-road" style="top:0;left:30%;width:2px;height:100%"></div>
-          <div class="map-road" style="top:0;left:60%;width:2px;height:100%"></div>
-          <div class="map-pin pin-g" style="top:30%;left:26%">🥦</div>
-          <div class="map-pin pin-b" style="top:15%;left:55%">🏠</div>
-          <div class="map-pin pin-a" style="top:55%;left:68%">⚡</div>
-          <div class="map-pin pin-p" style="top:45%;left:42%">📅</div>
-          <div class="map-pin pin-g" style="top:65%;left:28%">🌽</div>
-        </div>
+        <div id="map"></div>
         <div class="ai-chip">
           <strong>AI Screening Result</strong> — Based on your household profile
           <div class="chip-tags">
@@ -287,7 +274,6 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
 
 <div class="divider"></div>
 
-<!-- CAPABILITIES -->
 <div class="section">
   <div class="section-eyebrow">Platform capabilities</div>
   <h2 class="section-title">Five pillars, one ecosystem</h2>
@@ -328,7 +314,6 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
 
 <div class="divider"></div>
 
-<!-- SCREENER -->
 <div class="section" id="screener">
   <div class="section-eyebrow">AI eligibility screening</div>
   <h2 class="section-title">Find programs you qualify for — in seconds</h2>
@@ -411,7 +396,6 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
 
 <div class="divider"></div>
 
-<!-- POP-UP MARKETS -->
 <div class="section" id="markets">
   <div class="section-eyebrow">University-powered pop-up markets</div>
   <h2 class="section-title">We bring the market to you</h2>
@@ -490,7 +474,6 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
 
 <div class="divider"></div>
 
-<!-- WORKFORCE -->
 <div class="section" id="workforce">
   <div class="section-eyebrow">CHW workforce dashboard</div>
   <h2 class="section-title">The people behind the platform</h2>
@@ -576,7 +559,6 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
 
 <div class="divider"></div>
 
-<!-- IMPACT -->
 <div class="section" id="impact">
   <div class="section-eyebrow">Community impact</div>
   <h2 class="section-title">Measurable change, not just intentions</h2>
@@ -732,9 +714,33 @@ window.addEventListener('scroll',function(){
     l.classList.toggle('active',sections[i]===cur);
   });
 });
+
+// Map Initialization Script
+window.addEventListener('load', function() {
+  const map = L.map('map').setView([37.0299, -76.3452], 12);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  const snapRetailers = L.esri.featureLayer({
+    url: 'https://services1.arcgis.com/RLQu0rK7h4kbsBq5/arcgis/rest/services/snap_retailer_location_data/FeatureServer/0',
+    where: "State = 'VA' AND (City = 'HAMPTON' OR City = 'NEWPORT NEWS')",
+    pointToLayer: function (geojson, latlng) {
+      return L.circleMarker(latlng, {
+        radius: 6,
+        fillColor: "#1D9E75",
+        color: "#fff",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.8
+      });
+    }
+  }).addTo(map);
+
+  snapRetailers.bindPopup(function (layer) {
+    return `<strong>${layer.feature.properties.Store_Name}</strong><br>${layer.feature.properties.Store_Street_Address}`;
+  });
+});
 </script>
 </body>
 </html>
-
-FoodBridge_Hampton_Roads.html
-Displaying FoodBridge_Hampton_Roads.html.
