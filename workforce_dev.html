@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community Bridge</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-d:#0F6E56;--green-l:#E1F5EE;--green-m:#9FE1CB;
+  --amber:#BA7517;--amber-l:#FAEEDA;--amber-m:#FAC775;
+  --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#B5D4F4;
+  --coral:#993C1D;--coral-l:#FAECE7;--coral-m:#F5C4B3;
+  --purple:#534AB7;--purple-l:#EEEDFE;--purple-m:#CECBF6;
+  --ink:#1a1a18;--ink-m:#444441;--ink-l:#888780;
+  --paper:#fafaf7;--paper-m:#f1efea;--paper-d:#e8e6e0;
+  --white:#ffffff;
+  --border:rgba(0,0,0,0.1);
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.6;overflow-x:hidden}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--green-d);letter-spacing:-0.5px}
+.nav-logo span{color:var(--ink-l);font-weight:400;font-size:13px;margin-left:8px;font-family:'DM Sans',sans-serif}
+.nav-links{display:flex;gap:4px}
+.nav-link{padding:6px 14px;border-radius:6px;font-size:13px;color:var(--ink-m);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;transition:all .15s}
+.nav-link:hover,.nav-link.active{background:var(--green-l);color:var(--green-d)}
+.nav-cta{padding:8px 18px;background:var(--green);color:white;border:none;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.nav-cta:hover{opacity:.88}
+
+/* HERO */
+.hero{padding:80px 32px 60px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:16px}
+.hero-title{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:20px}
+.hero-title em{color:var(--green);font-style:normal}
+.hero-body{font-size:16px;color:var(--ink-m);line-height:1.7;margin-bottom:28px;font-weight:300}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{padding:12px 24px;background:var(--green);color:white;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-primary:hover{background:var(--green-d)}
+.btn-outline{padding:12px 24px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--ink-m);cursor:pointer;background:none;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-outline:hover{border-color:var(--green);color:var(--green-d)}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.hero-stat{background:var(--white);padding:20px;text-align:center}
+.hs-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--ink);line-height:1}
+.hs-label{font-size:11px;color:var(--ink-l);margin-top:4px;font-weight:400}
+.hero-visual{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07)}
+.hv-header{background:var(--green);padding:14px 18px;display:flex;align-items:center;gap:10px}
+.hv-dots{display:flex;gap:5px}
+.hv-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.3)}
+.hv-title{font-size:12px;color:rgba(255,255,255,0.9);font-weight:500}
+.hv-body{padding:16px}
+.map-mock{background:linear-gradient(135deg,#dff5ec,#e8f3fb,#eef0f8);border-radius:8px;height:180px;position:relative;overflow:hidden;margin-bottom:12px}
+.map-road{position:absolute;background:rgba(255,255,255,0.5);border-radius:1px}
+.map-pin{position:absolute;width:26px;height:26px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.pin-g{background:var(--green)}
+.pin-b{background:var(--blue)}
+.pin-a{background:var(--amber)}
+.pin-p{background:var(--purple)}
+.ai-chip{background:var(--green-l);border:1px solid var(--green-m);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-d)}
+.ai-chip strong{font-weight:500}
+.chip-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.ctag{background:var(--green);color:white;font-size:10px;padding:3px 8px;border-radius:10px;font-weight:500}
+
+/* SECTION STRUCTURE */
+.section{padding:64px 32px;max-width:1100px;margin:0 auto}
+.section-eyebrow{font-size:11px;font-weight:500;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:12px}
+.section-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;line-height:1.15;letter-spacing:-0.8px;margin-bottom:12px}
+.section-body{font-size:15px;color:var(--ink-m);line-height:1.7;max-width:560px;font-weight:300}
+.divider{height:1px;background:var(--border);max-width:1100px;margin:0 auto}
+
+/* CAPABILITIES GRID */
+.caps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.cap-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .2s;cursor:pointer}
+.cap-card:hover{border-color:var(--green-m);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.cap-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px}
+.ic-green{background:var(--green-l)}
+.ic-blue{background:var(--blue-l)}
+.ic-amber{background:var(--amber-l)}
+.ic-purple{background:var(--purple-l)}
+.ic-coral{background:var(--coral-l)}
+.cap-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:6px}
+.cap-desc{font-size:13px;color:var(--ink-l);line-height:1.6}
+
+/* SCREENER */
+.screener-wrap{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:40px}
+.sw-header{background:var(--ink);padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+.sw-title{font-size:15px;font-weight:500;color:white}
+.sw-sub{font-size:12px;color:rgba(255,255,255,0.5)}
+.sw-badge{background:var(--green);color:white;font-size:11px;padding:4px 10px;border-radius:10px;font-weight:500}
+.sw-body{padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.screener-left{}
+.q-label{font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.q-row{margin-bottom:20px}
+.q-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:10px}
+.options{display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:var(--paper)}
+.opt:hover{border-color:var(--green-m);background:var(--green-l)}
+.opt.sel{border-color:var(--green);background:var(--green-l)}
+.opt-dot{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.opt.sel .opt-dot{background:var(--green);border-color:var(--green)}
+.opt-inner{width:7px;height:7px;border-radius:50%;background:white;display:none}
+.opt.sel .opt-inner{display:block}
+.opt-text{font-size:13px;color:var(--ink)}
+.hh-control{display:flex;align-items:center;gap:14px;margin-top:8px}
+.hh-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--paper);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
+.hh-btn:hover{border-color:var(--green);background:var(--green-l)}
+.hh-num{font-size:22px;font-weight:500;min-width:24px;text-align:center}
+.income-field{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);outline:none;margin-top:4px}
+.income-field:focus{border-color:var(--green)}
+.run-btn{width:100%;padding:12px;background:var(--green);color:white;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px;transition:opacity .15s}
+.run-btn:hover{opacity:.88}
+.results-panel{background:var(--paper-m);border-radius:10px;padding:20px}
+.rp-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:12px}
+.result-item{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;transition:border-color .15s}
+.result-item.qualify{border-color:var(--green-m)}
+.ri-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.ri-name{font-size:13px;font-weight:500;color:var(--ink)}
+.ri-badge{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:500}
+.rb-q{background:var(--green-l);color:var(--green-d)}
+.rb-r{background:var(--amber-l);color:var(--amber)}
+.ri-desc{font-size:11px;color:var(--ink-l)}
+.ri-benefit{font-size:11px;color:var(--green-d);font-weight:500;margin-top:3px}
+.placeholder-results{text-align:center;padding:40px 20px;color:var(--ink-l)}
+.pr-icon{font-size:32px;margin-bottom:10px}
+.pr-text{font-size:13px}
+
+/* POP-UP MARKETS */
+.markets-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px;align-items:start}
+.market-list{}
+.market-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;display:flex;gap:16px;align-items:flex-start;transition:all .15s;cursor:pointer}
+.market-card:hover{border-color:var(--green-m);box-shadow:0 4px 16px rgba(0,0,0,.05)}
+.market-card.upcoming{border-color:var(--green)}
+.mc-date{background:var(--green-l);border-radius:8px;padding:8px 10px;text-align:center;flex-shrink:0;min-width:44px}
+.mc-month{font-size:9px;color:var(--green-d);font-weight:500;text-transform:uppercase}
+.mc-day{font-size:20px;color:var(--green-d);font-weight:700;line-height:1}
+.mc-info{}
+.mc-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.mc-loc{font-size:12px;color:var(--ink-l)}
+.mc-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.mc-tag{font-size:10px;padding:2px 7px;border-radius:6px;font-weight:500}
+.t-food{background:var(--green-l);color:var(--green-d)}
+.t-snap{background:var(--blue-l);color:var(--blue)}
+.t-health{background:var(--coral-l);color:var(--coral)}
+.t-cook{background:var(--amber-l);color:var(--amber)}
+.notify-box{background:var(--ink);border-radius:12px;padding:24px;color:white;position:sticky;top:80px}
+.nb-title{font-size:16px;font-weight:500;margin-bottom:6px}
+.nb-sub{font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:18px;line-height:1.5}
+.nb-input{width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:rgba(255,255,255,0.08);color:white;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px}
+.nb-input::placeholder{color:rgba(255,255,255,0.35)}
+.nb-input:focus{border-color:var(--green-m)}
+.nb-select{width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:rgba(255,255,255,0.08);color:white;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px;appearance:none}
+.nb-select option{background:var(--ink);color:white}
+.nb-btn{width:100%;padding:11px;background:var(--green);color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.nb-btn:hover{opacity:.88}
+.nb-success{display:none;background:var(--green-l);border-radius:8px;padding:12px;text-align:center;color:var(--green-d);font-size:13px;font-weight:500;margin-top:8px}
+
+/* WORKFORCE */
+.workforce-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
+.wf-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.wf-stat{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.wf-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink)}
+.wf-label{font-size:11px;color:var(--ink-l);margin-top:2px}
+.chw-list{}
+.chw-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.chw-row:last-child{border-bottom:none}
+.chw-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+.av1{background:var(--purple-l);color:var(--purple)}
+.av2{background:var(--blue-l);color:var(--blue)}
+.av3{background:var(--coral-l);color:var(--coral)}
+.av4{background:var(--amber-l);color:var(--amber)}
+.av5{background:var(--green-l);color:var(--green-d)}
+.chw-info{flex:1}
+.chw-name{font-size:13px;font-weight:500;color:var(--ink)}
+.chw-spec{font-size:11px;color:var(--ink-l)}
+.chw-right{text-align:right}
+.chw-load{font-size:12px;color:var(--ink-m);margin-bottom:4px}
+.bar-bg{height:4px;width:80px;background:var(--paper-d);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;background:var(--green);transition:width .4s}
+.bar-fill.high{background:var(--amber)}
+.bar-fill.full{background:#E24B4A}
+.training-panel{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px}
+.tp-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:16px}
+.tp-module{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.tp-module:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.tm-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.tm-info{flex:1}
+.tm-name{font-size:12px;font-weight:500;color:var(--ink)}
+.tm-stat{font-size:11px;color:var(--ink-l)}
+.tm-pct{font-size:12px;font-weight:500}
+.pct-green{color:var(--green-d)}
+.pct-amber{color:var(--amber)}
+
+/* IMPACT */
+.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px}
+.impact-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center}
+.impact-num{font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:var(--green-d);line-height:1}
+.impact-label{font-size:12px;color:var(--ink-l);margin-top:6px;line-height:1.4}
+
+/* FOOTER */
+footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margin-top:80px}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:gap}
+.footer-logo{font-family:'Playfair Display',serif;font-size:18px;color:white;margin-bottom:4px}
+.footer-sub{font-size:12px}
+.footer-partners{font-size:12px;text-align:right}
+.footer-partners strong{color:rgba(255,255,255,0.85)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero-eyebrow{animation:fadeUp .5s ease both}
+.hero-title{animation:fadeUp .5s .1s ease both}
+.hero-body{animation:fadeUp .5s .2s ease both}
+.hero-actions{animation:fadeUp .5s .3s ease both}
+.hero-visual{animation:fadeUp .6s .2s ease both}
+
+@media(max-width:768px){
+  .hero,.caps-grid,.markets-grid,.workforce-grid,.impact-grid{grid-template-columns:1fr}
+  .hero-title{font-size:36px}
+  .sw-body{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">FoodBridge <span>Hampton Roads, VA</span></div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="scrollTo('home')">Home</button>
+    <button class="nav-link" onclick="scrollTo('screener')">Eligibility</button>
+    <button class="nav-link" onclick="scrollTo('markets')">Pop-Up Markets</button>
+    <button class="nav-link" onclick="scrollTo('workforce')">Workforce</button>
+    <button class="nav-link" onclick="scrollTo('impact')">Impact</button>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('screener').scrollIntoView({behavior:'smooth'})">Check eligibility</button>
+</nav>
+
+<section id="home">
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Hampton University Partnership · Food as Medicine</div>
+    <h1 class="hero-title">Food is <em>medicine.</em> Technology is the bridge.</h1>
+    <p class="hero-body">FoodBridge connects Hampton Roads residents to food, housing, and health resources — through AI-powered screening, real-time resource maps, and university-led pop-up markets that bring help directly to communities that need it most.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.getElementById('screener').scrollIntoView({behavior:'smooth'})">Check my eligibility</button>
+      <button class="btn-outline" onclick="document.getElementById('markets').scrollIntoView({behavior:'smooth'})">Find a market near me</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-visual">
+      <div class="hv-header">
+        <div class="hv-dots"><div class="hv-dot"></div><div class="hv-dot"></div><div class="hv-dot"></div></div>
+        <div class="hv-title">Resource Map — Hampton Roads, VA</div>
+      </div>
+      <div class="hv-body">
+        <div class="map-mock">
+          <div class="map-road" style="top:35%;left:0;width:100%;height:3px;transform:rotate(-2deg)"></div>
+          <div class="map-road" style="top:60%;left:0;width:100%;height:2px"></div>
+          <div class="map-road" style="top:0;left:30%;width:2px;height:100%"></div>
+          <div class="map-road" style="top:0;left:60%;width:2px;height:100%"></div>
+          <div class="map-pin pin-g" style="top:30%;left:26%">🥦</div>
+          <div class="map-pin pin-b" style="top:15%;left:55%">🏠</div>
+          <div class="map-pin pin-a" style="top:55%;left:68%">⚡</div>
+          <div class="map-pin pin-p" style="top:45%;left:42%">📅</div>
+          <div class="map-pin pin-g" style="top:65%;left:28%">🌽</div>
+        </div>
+        <div class="ai-chip">
+          <strong>AI Screening Result</strong> — Based on your household profile
+          <div class="chip-tags">
+            <span class="ctag">✓ SNAP Eligible</span>
+            <span class="ctag">✓ WIC Eligible</span>
+            <span class="ctag">✓ LIHEAP Eligible</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-stats" style="margin-top:12px">
+      <div class="hero-stat"><div class="hs-num">47K+</div><div class="hs-label">Food insecure residents</div></div>
+      <div class="hero-stat"><div class="hs-num">34</div><div class="hs-label">Active CHWs</div></div>
+      <div class="hero-stat"><div class="hs-num">83%</div><div class="hs-label">Referral success rate</div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CAPABILITIES -->
+<div class="section">
+  <div class="section-eyebrow">Platform capabilities</div>
+  <h2 class="section-title">Five pillars, one ecosystem</h2>
+  <p class="section-body">Every feature is designed to work together — so a resident who finds a pop-up market can get screened, connect with a CHW, and enroll in benefits in a single visit.</p>
+  <div class="caps-grid">
+    <div class="cap-card">
+      <div class="cap-icon ic-green">🗺️</div>
+      <div class="cap-name">Real-time resource map</div>
+      <div class="cap-desc">Live geospatial map of food pantries, housing services, utilities assistance, and childcare across Hampton Roads — updated in real time.</div>
+    </div>
+    <div class="cap-card">
+      <div class="cap-icon ic-blue">🤖</div>
+      <div class="cap-name">AI eligibility screener</div>
+      <div class="cap-desc">Instant program matching based on household size, income, and circumstances. Surfaces SNAP, WIC, LIHEAP, ERAP, and more in seconds.</div>
+    </div>
+    <div class="cap-card">
+      <div class="cap-icon ic-coral">👩‍⚕️</div>
+      <div class="cap-name">Virtual CHW visits</div>
+      <div class="cap-desc">Secure video and messaging access to community health workers and case managers — no travel required, same-day slots available.</div>
+    </div>
+    <div class="cap-card">
+      <div class="cap-icon ic-amber">📅</div>
+      <div class="cap-name">Community events calendar</div>
+      <div class="cap-desc">Farmers markets, cooking classes, health screenings, and SNAP workshops — with SMS and push notifications when events come to your ZIP code.</div>
+    </div>
+    <div class="cap-card">
+      <div class="cap-icon ic-purple">📊</div>
+      <div class="cap-name">Workforce dashboard</div>
+      <div class="cap-desc">Real-time CHW caseload tracking, training progress, and certification status — so supervisors can balance load and flag burnout risk early.</div>
+    </div>
+    <div class="cap-card" style="background:var(--green);border-color:var(--green)">
+      <div class="cap-icon" style="background:rgba(255,255,255,0.15);font-size:18px">🌱</div>
+      <div class="cap-name" style="color:white">Pop-up market network</div>
+      <div class="cap-desc" style="color:rgba(255,255,255,0.8)">Hampton University volunteers bring fresh produce, SNAP enrollment, and health screenings directly into food deserts. Residents notified by SMS 72 hours in advance.</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SCREENER -->
+<div class="section" id="screener">
+  <div class="section-eyebrow">AI eligibility screening</div>
+  <h2 class="section-title">Find programs you qualify for — in seconds</h2>
+  <p class="section-body">Answer five quick questions. Our AI matches you to food, housing, and utility programs available right now in Hampton Roads.</p>
+  <div class="screener-wrap">
+    <div class="sw-header">
+      <div><div class="sw-title">Eligibility screener</div><div class="sw-sub">Hampton Roads, VA · Based on current program thresholds</div></div>
+      <div class="sw-badge">Free · Confidential</div>
+    </div>
+    <div class="sw-body">
+      <div class="screener-left">
+        <div class="q-row">
+          <div class="q-label">Household size</div>
+          <div class="q-title">How many people in your household?</div>
+          <div class="hh-control">
+            <button class="hh-btn" onclick="changeHH(-1)">−</button>
+            <span class="hh-num" id="hhNum">2</span>
+            <button class="hh-btn" onclick="changeHH(1)">+</button>
+            <span style="font-size:13px;color:var(--ink-l)">people</span>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-label">Monthly income</div>
+          <div class="q-title">Gross household income per month?</div>
+          <input class="income-field" type="number" id="incomeVal" placeholder="e.g. 2400 (enter 0 if none)" min="0"/>
+        </div>
+        <div class="q-row">
+          <div class="q-label">Housing situation</div>
+          <div class="q-title">Current housing?</div>
+          <div class="options">
+            <div class="opt" onclick="selOpt('housing','own',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">I own my home</span></div>
+            <div class="opt" onclick="selOpt('housing','rent',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">I rent</span></div>
+            <div class="opt" onclick="selOpt('housing','unstable',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">Staying with others / unstable</span></div>
+            <div class="opt" onclick="selOpt('housing','homeless',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">Experiencing homelessness</span></div>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-label">Household circumstances</div>
+          <div class="q-title">Anyone in your home who is…</div>
+          <div class="options">
+            <div class="opt" onclick="togMulti('circ','pregnant',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">Pregnant or recently gave birth</span></div>
+            <div class="opt" onclick="togMulti('circ','children',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">Children under 5</span></div>
+            <div class="opt" onclick="togMulti('circ','elderly',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">Adults 60+ years old</span></div>
+            <div class="opt" onclick="togMulti('circ','disability',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">Person with disability</span></div>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-label">Utilities</div>
+          <div class="q-title">Trouble paying utility bills?</div>
+          <div class="options">
+            <div class="opt" onclick="selOpt('util','yes',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">Yes, behind or at risk</span></div>
+            <div class="opt" onclick="selOpt('util','maybe',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">Managing but it's a stretch</span></div>
+            <div class="opt" onclick="selOpt('util','no',this)"><div class="opt-dot"><div class="opt-inner"></div></div><span class="opt-text">No, not a concern</span></div>
+          </div>
+        </div>
+        <button class="run-btn" onclick="runScreener()">Show my eligible programs →</button>
+      </div>
+      <div class="screener-right">
+        <div class="results-panel">
+          <div class="rp-title" id="rpTitle">Your results will appear here</div>
+          <div id="resultsArea">
+            <div class="placeholder-results">
+              <div class="pr-icon">🔍</div>
+              <div class="pr-text">Complete the screener on the left and click "Show my eligible programs" to see your matches.</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px;background:var(--blue-l);border:1px solid var(--blue-m);border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:center">
+          <div style="font-size:22px">👩‍⚕️</div>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--blue)">Need help applying?</div>
+            <div style="font-size:12px;color:var(--blue);opacity:.8">A CHW can walk you through every program — free of charge.</div>
+          </div>
+          <button class="btn-primary" style="font-size:12px;padding:8px 14px;white-space:nowrap;margin-left:auto" onclick="alert('CHW scheduling would open here in the live platform.')">Book visit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- POP-UP MARKETS -->
+<div class="section" id="markets">
+  <div class="section-eyebrow">University-powered pop-up markets</div>
+  <h2 class="section-title">We bring the market to you</h2>
+  <p class="section-body">Hampton University students and volunteers deploy into food deserts across Hampton Roads — bringing fresh produce, SNAP enrollment, health screenings, and cooking classes directly to the community.</p>
+  <div class="markets-grid">
+    <div class="market-list">
+      <div class="market-card upcoming">
+        <div class="mc-date"><div class="mc-month">Apr</div><div class="mc-day">2</div></div>
+        <div class="mc-info">
+          <div class="mc-name">Phoebus Community Market</div>
+          <div class="mc-loc">Hope House Community Center · 8am – 1pm</div>
+          <div class="mc-tags"><span class="mc-tag t-food">Fresh produce</span><span class="mc-tag t-snap">SNAP enrollment</span><span class="mc-tag t-health">BP screening</span></div>
+        </div>
+      </div>
+      <div class="market-card">
+        <div class="mc-date"><div class="mc-month">Apr</div><div class="mc-day">5</div></div>
+        <div class="mc-info">
+          <div class="mc-name">Cooking for Health — Diabetes Edition</div>
+          <div class="mc-loc">Hampton Univ. Extension Center · 10am – 12pm</div>
+          <div class="mc-tags"><span class="mc-tag t-cook">Cooking class</span><span class="mc-tag t-health">Nutrition counseling</span></div>
+        </div>
+      </div>
+      <div class="market-card">
+        <div class="mc-date"><div class="mc-month">Apr</div><div class="mc-day">9</div></div>
+        <div class="mc-info">
+          <div class="mc-name">Free Health Screening Day</div>
+          <div class="mc-loc">Bethel AME Church · 9am – 3pm</div>
+          <div class="mc-tags"><span class="mc-tag t-health">Blood pressure</span><span class="mc-tag t-health">Glucose testing</span><span class="mc-tag t-snap">SNAP help</span></div>
+        </div>
+      </div>
+      <div class="market-card">
+        <div class="mc-date"><div class="mc-month">Apr</div><div class="mc-day">14</div></div>
+        <div class="mc-info">
+          <div class="mc-name">SNAP Application Workshop</div>
+          <div class="mc-loc">Salvation Army Hampton · 10am – 2pm</div>
+          <div class="mc-tags"><span class="mc-tag t-snap">SNAP enrollment</span><span class="mc-tag t-food">Produce giveaway</span></div>
+        </div>
+      </div>
+      <div class="market-card">
+        <div class="mc-date"><div class="mc-month">Apr</div><div class="mc-day">19</div></div>
+        <div class="mc-info">
+          <div class="mc-name">Buckroe Beach Neighborhood Market</div>
+          <div class="mc-loc">Buckroe Community Center · 9am – 1pm</div>
+          <div class="mc-tags"><span class="mc-tag t-food">Fresh produce</span><span class="mc-tag t-cook">Recipe demos</span><span class="mc-tag t-health">WIC referrals</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="notify-box">
+        <div class="nb-title">Get notified when a market is near you</div>
+        <div class="nb-sub">We'll send you a text 72 hours before any pop-up market in your neighborhood. No app needed.</div>
+        <input class="nb-input" type="tel" id="notifyPhone" placeholder="Your phone number" />
+        <select class="nb-select" id="notifyZip">
+          <option value="">Select your ZIP code</option>
+          <option>23661 — Hampton (Phoebus)</option>
+          <option>23662 — Hampton (Buckroe)</option>
+          <option>23663 — Hampton (Wythe)</option>
+          <option>23664 — Hampton (Fox Hill)</option>
+          <option>23665 — Hampton (Langley)</option>
+          <option>23666 — Hampton (Newmarket)</option>
+          <option>23667 — Hampton (Downtown)</option>
+          <option>23668 — Hampton (Airport area)</option>
+          <option>23601 — Newport News (North)</option>
+          <option>23602 — Newport News (Denbigh)</option>
+          <option>23605 — Newport News (East End)</option>
+          <option>23606 — Newport News (Central)</option>
+          <option>23607 — Newport News (South)</option>
+        </select>
+        <button class="nb-btn" onclick="notifySignup()">Notify me by text →</button>
+        <div class="nb-success" id="notifySuccess">✓ You're signed up! We'll text you before markets in your area.</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:12px;line-height:1.5">Standard message rates may apply. Text STOP to unsubscribe anytime. Your information is never shared or sold.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- WORKFORCE -->
+<div class="section" id="workforce">
+  <div class="section-eyebrow">CHW workforce dashboard</div>
+  <h2 class="section-title">The people behind the platform</h2>
+  <p class="section-body">34 active community health workers across Hampton Roads. Real-time caseload tracking and training progress — so no one is overloaded and every resident gets the attention they deserve.</p>
+  <div class="workforce-grid">
+    <div>
+      <div class="wf-stats">
+        <div class="wf-stat"><div class="wf-num">34</div><div class="wf-label">Active CHWs</div></div>
+        <div class="wf-stat"><div class="wf-num">612</div><div class="wf-label">Screenings this month</div></div>
+        <div class="wf-stat"><div class="wf-num">83%</div><div class="wf-label">Referral success</div></div>
+        <div class="wf-stat"><div class="wf-num">4.8</div><div class="wf-label">Avg. satisfaction score</div></div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px">
+        <div style="font-size:14px;font-weight:500;margin-bottom:14px">CHW caseload — live</div>
+        <div class="chw-list">
+          <div class="chw-row">
+            <div class="chw-av av1">TJ</div>
+            <div class="chw-info"><div class="chw-name">Tamara Johnson</div><div class="chw-spec">Food · Housing · Certified</div></div>
+            <div class="chw-right"><div class="chw-load">18 / 25</div><div class="bar-bg"><div class="bar-fill" style="width:72%"></div></div></div>
+          </div>
+          <div class="chw-row">
+            <div class="chw-av av2">MR</div>
+            <div class="chw-info"><div class="chw-name">Marcus Reid</div><div class="chw-spec">Clinical Bridge · In training</div></div>
+            <div class="chw-right"><div class="chw-load">23 / 25</div><div class="bar-bg"><div class="bar-fill high" style="width:92%"></div></div></div>
+          </div>
+          <div class="chw-row">
+            <div class="chw-av av3">DN</div>
+            <div class="chw-info"><div class="chw-name">Diana Nguyen</div><div class="chw-spec">Diabetes · Nutrition · Certified</div></div>
+            <div class="chw-right"><div class="chw-load">12 / 25</div><div class="bar-bg"><div class="bar-fill" style="width:48%"></div></div></div>
+          </div>
+          <div class="chw-row">
+            <div class="chw-av av4">KW</div>
+            <div class="chw-info"><div class="chw-name">Kevin Williams</div><div class="chw-spec">Housing · Utilities · Certified</div></div>
+            <div class="chw-right"><div class="chw-load">15 / 25</div><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div></div>
+          </div>
+          <div class="chw-row">
+            <div class="chw-av av5">SA</div>
+            <div class="chw-info"><div class="chw-name">Sandra Alvarez</div><div class="chw-spec">WIC · Maternal Health · Certified</div></div>
+            <div class="chw-right"><div class="chw-load">20 / 25</div><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="training-panel">
+      <div class="tp-title">Training module progress — cohort 3</div>
+      <div class="tp-module">
+        <div class="tm-icon ic-green">🍎</div>
+        <div class="tm-info"><div class="tm-name">Food as Medicine fundamentals</div><div class="tm-stat">32 of 34 CHWs completed</div></div>
+        <div class="tm-pct pct-green">94%</div>
+      </div>
+      <div class="tp-module">
+        <div class="tm-icon ic-blue">📋</div>
+        <div class="tm-info"><div class="tm-name">SNAP / WIC enrollment navigation</div><div class="tm-stat">34 of 34 CHWs completed</div></div>
+        <div class="tm-pct pct-green">100%</div>
+      </div>
+      <div class="tp-module">
+        <div class="tm-icon ic-coral">❤️</div>
+        <div class="tm-info"><div class="tm-name">Chronic disease screening basics</div><div class="tm-stat">28 of 34 CHWs completed</div></div>
+        <div class="tm-pct pct-green">82%</div>
+      </div>
+      <div class="tp-module">
+        <div class="tm-icon ic-amber">🏠</div>
+        <div class="tm-info"><div class="tm-name">Housing & utility referral pathways</div><div class="tm-stat">22 of 34 CHWs completed</div></div>
+        <div class="tm-pct pct-amber">65%</div>
+      </div>
+      <div class="tp-module">
+        <div class="tm-icon ic-purple">🔒</div>
+        <div class="tm-info"><div class="tm-name">Health data privacy & HIPAA</div><div class="tm-stat">34 of 34 CHWs completed</div></div>
+        <div class="tm-pct pct-green">100%</div>
+      </div>
+      <div class="tp-module">
+        <div class="tm-icon" style="background:var(--paper-m)">🤖</div>
+        <div class="tm-info"><div class="tm-name">AI tool & platform certification</div><div class="tm-stat">14 of 34 CHWs completed</div></div>
+        <div class="tm-pct pct-amber">41%</div>
+      </div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <div style="font-size:12px;color:var(--ink-l);margin-bottom:8px">Next training cohort</div>
+        <div style="background:var(--green-l);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-d);font-weight:500">April 15 — Cohort 4 orientation · Hampton University Main Campus</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- IMPACT -->
+<div class="section" id="impact">
+  <div class="section-eyebrow">Community impact</div>
+  <h2 class="section-title">Measurable change, not just intentions</h2>
+  <p class="section-body">Every screening, market visit, and CHW consultation generates data that improves how we target resources — and builds the case for sustained public investment.</p>
+  <div class="impact-grid">
+    <div class="impact-card">
+      <div class="impact-num">1,247</div>
+      <div class="impact-label">Families connected to resources this month</div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-num">$2.1M</div>
+      <div class="impact-label">In benefits unlocked for Hampton Roads residents</div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-num">18</div>
+      <div class="impact-label">Pop-up markets deployed in food deserts this quarter</div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-num">4.8★</div>
+      <div class="impact-label">Average resident satisfaction score (5-point scale)</div>
+    </div>
+  </div>
+  <div style="margin-top:32px;background:var(--ink);border-radius:14px;padding:40px;text-align:center;color:white">
+    <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:12px;line-height:1.2">A replicable model for national deployment</div>
+    <div style="font-size:15px;color:rgba(255,255,255,0.6);max-width:560px;margin:0 auto 24px;line-height:1.7;font-weight:300">FoodBridge is built to scale. Every data standard, university partnership model, and CHW training module is designed to be adopted by cities and regions across the country.</div>
+    <button class="btn-primary" style="font-size:14px" onclick="alert('Partner inquiry form would open here.')">Partner with FoodBridge →</button>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">FoodBridge</div>
+      <div class="footer-sub">Hampton Roads, Virginia · Innovation for Food Security & Public Health</div>
+    </div>
+    <div class="footer-partners">
+      <strong>Developed in partnership with</strong><br>
+      Hampton University · Virginia DSS · Peninsula Food Bank<br>
+      Dominion Energy · Hampton Dept. of Human Services
+    </div>
+  </div>
+</footer>
+
+<script>
+var state={hh:2,housing:null,circ:[],util:null};
+var SNAP_NET=[0,1580,2137,2694,3250,3807,4364,4921,5478];
+var SNAP_GROSS=[0,2311,3138,3964,4790,5616,6442,7268,8094];
+
+function scrollTo(id){
+  var el=document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('active')});
+  event.target.classList.add('active');
+}
+
+function changeHH(d){
+  state.hh=Math.max(1,Math.min(8,state.hh+d));
+  document.getElementById('hhNum').textContent=state.hh;
+}
+
+function selOpt(key,val,el){
+  var parent=el.parentElement;
+  parent.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel')});
+  el.classList.add('sel');
+  state[key]=val;
+}
+
+function togMulti(key,val,el){
+  if(el.classList.contains('sel')){
+    el.classList.remove('sel');
+    state[key]=state[key].filter(function(v){return v!==val});
+  } else {
+    el.classList.add('sel');
+    state[key].push(val);
+  }
+}
+
+function runScreener(){
+  var inc=parseFloat(document.getElementById('incomeVal').value)||0;
+  var hh=Math.min(state.hh,8);
+  var snapNet=SNAP_NET[hh]||(SNAP_NET[8]+(hh-8)*557);
+  var snapGross=SNAP_GROSS[hh]||(SNAP_GROSS[8]+(hh-8)*826);
+  var results=[];
+
+  // SNAP
+  if(inc<=snapNet) results.push({name:'SNAP (Food Stamps)',badge:'qualify',desc:'Monthly food assistance for groceries.',benefit:'Up to $'+Math.min(1756,Math.round(snapNet*0.3+100))+'/mo · Virginia DSS Hampton'});
+  else if(inc<=snapGross) results.push({name:'SNAP (Food Stamps)',badge:'review',desc:'You may qualify depending on deductions.',benefit:'Needs case review · Virginia DSS'});
+
+  // WIC
+  if(state.circ.includes('pregnant')||state.circ.includes('children')){
+    if(inc<=snapGross*1.4) results.push({name:'WIC Program',badge:'qualify',desc:'Nutrition support for pregnant women and children under 5.',benefit:'Food vouchers + counseling · Hampton Health Dept.'});
+  }
+
+  // LIHEAP
+  if(state.util==='yes'||state.util==='maybe'){
+    if(inc<=snapNet*1.5) results.push({name:'LIHEAP — Utility Assistance',badge:'qualify',desc:'Federal heating and cooling bill assistance.',benefit:'Up to $1,200/season · Dept. of Social Services'});
+    results.push({name:'Dominion Energy Share',badge:'qualify',desc:'Bill credits and payment plans for financial hardship.',benefit:'Bill credit + payment plan · Apply online'});
+  }
+
+  // Housing
+  if(state.housing==='homeless'||state.housing==='unstable') results.push({name:'Emergency Housing',badge:'qualify',desc:'Shelter referrals and transitional housing navigation.',benefit:'Immediate · Hampton CSB 757-788-0300'});
+  if(state.housing==='rent'&&inc<=snapGross) results.push({name:'Emergency Rental Assistance (ERAP)',badge:'qualify',desc:'Covers past-due and forward rent.',benefit:'Up to $15,000 · Hampton Human Services'});
+
+  // Special
+  if(state.circ.includes('elderly')) results.push({name:'Senior Services of SEVA',badge:'qualify',desc:'Home-delivered meals and wellness check-ins for adults 60+.',benefit:'Meals + wellness · Senior Services of SEVA'});
+  if(state.circ.includes('disability')) results.push({name:'SSI — Disability Benefits',badge:'review',desc:'Monthly payments for adults with disabilities.',benefit:'Up to $943/mo · Social Security Administration'});
+
+  // Always add food bank
+  results.push({name:'Peninsula Food Bank — SNAP Navigator',badge:'qualify',desc:'Free in-person help completing your SNAP application.',benefit:'Walk-in Tue–Thu · 2401 Aluminum Ave, Hampton'});
+
+  var q=results.filter(function(r){return r.badge==='qualify'});
+  var rv=results.filter(function(r){return r.badge==='review'});
+
+  document.getElementById('rpTitle').textContent=q.length+' programs matched for your household';
+
+  var html='';
+  if(q.length){
+    html+='<div style="font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Likely eligible</div>';
+    q.forEach(function(p){html+=makeCard(p)});
+  }
+  if(rv.length){
+    html+='<div style="font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 8px">Needs review</div>';
+    rv.forEach(function(p){html+=makeCard(p)});
+  }
+  document.getElementById('resultsArea').innerHTML=html;
+}
+
+function makeCard(p){
+  var bc=p.badge==='qualify'?'rb-q':'rb-r';
+  var bl=p.badge==='qualify'?'Likely eligible':'Needs review';
+  var cls=p.badge==='qualify'?'result-item qualify':'result-item';
+  return '<div class="'+cls+'"><div class="ri-top"><div class="ri-name">'+p.name+'</div><span class="ri-badge '+bc+'">'+bl+'</span></div><div class="ri-desc">'+p.desc+'</div><div class="ri-benefit">'+p.benefit+'</div></div>';
+}
+
+function notifySignup(){
+  var ph=document.getElementById('notifyPhone').value;
+  var zip=document.getElementById('notifyZip').value;
+  if(!ph||!zip){alert('Please enter your phone number and select your ZIP code.');return;}
+  document.getElementById('notifySuccess').style.display='block';
+  document.getElementById('notifyPhone').value='';
+  document.getElementById('notifyZip').value='';
+}
+
+window.addEventListener('scroll',function(){
+  var sections=['home','screener','markets','workforce','impact'];
+  var links=document.querySelectorAll('.nav-link');
+  var cur='home';
+  sections.forEach(function(id){
+    var el=document.getElementById(id);
+    if(el&&el.getBoundingClientRect().top<100) cur=id;
+  });
+  links.forEach(function(l,i){
+    l.classList.toggle('active',sections[i]===cur);
+  });
+});
+</script>
+</body>
+</html>
+
+FoodBridge_Hampton_Roads.html
+Displaying FoodBridge_Hampton_Roads.html.
