@@ -36,34 +36,83 @@ nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.95);backdrop
 .nav-cta:hover{opacity:.88}
 
 /* HERO */
-.hero{padding:80px 32px 60px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero {
+  padding: 80px 32px 60px;
+  max-width: 100%;        /* was 1100px */
+  margin: 0 auto;
+  display: flex;          /* was grid */
+  flex-direction: column; /* stack vertically */
+  align-items: center;    /* center everything */
+  text-align: center;     /* center the text */
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center; /* center the buttons too */
+}
 .hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:16px}
 .hero-title{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:20px}
 .hero-title em{color:var(--green);font-style:normal}
-.hero-body{font-size:16px;color:var(--ink-m);line-height:1.7;margin-bottom:28px;font-weight:300}
+.hero-body{font-size:26px;color:var(--ink-m);line-height:1.7;margin-bottom:28px;font-weight:300}
 .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
-.btn-primary{padding:12px 24px;background:var(--green);color:white;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-primary{padding:12px 24px;background:var(--green);color:white;border:none;bord£er-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
 .btn-primary:hover{background:var(--green-d)}
 .btn-outline{padding:12px 24px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--ink-m);cursor:pointer;background:none;font-family:'DM Sans',sans-serif;transition:all .15s}
 .btn-outline:hover{border-color:var(--green);color:var(--green-d)}
-.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.hero-stats{display:grid;grid-template-columns:repeat(1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
 .hero-stat{background:var(--white);padding:20px;text-align:center}
 .hs-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--ink);line-height:1}
 .hs-label{font-size:11px;color:var(--ink-l);margin-top:4px;font-weight:400}
-.hero-visual{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07)}
-.hv-header{background:var(--green);padding:14px 18px;display:flex;align-items:center;gap:10px}
-.hv-dots{display:flex;gap:5px}
-.hv-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.3)}
-.hv-title{font-size:12px;color:rgba(255,255,255,0.9);font-weight:500}
+
+.hero-visual{background:var(--white);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,0.07);
+  width: 100%;
+}
+
+.hv-header{background:var(--green);
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  gap:10px}
+
+.hv-dots{display:flex;
+  gap:5px
+}
+
+.hv-dot{
+  width:9px;height:9px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.3)}
+
+.hv-title{font-size:16px;
+  color:rgba(255,255,255,0.9);
+  font-weight:500
+}
+
 .hv-body{padding:6px}
-#map{background:var(--paper-m);border-radius:8px;height:180px;position:relative;overflow:hidden;margin-bottom:12px;z-index:1}
+
+#map {
+  background:var(--paper-m);
+  border-radius:8px;
+  height:400px;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:12px;
+  z-index:1;
+  width: 100%;
+}
 .ai-chip{background:var(--green-l);border:1px solid var(--green-m);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-d)}
 .ai-chip strong{font-weight:500}
 .chip-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .ctag{background:var(--green);color:white;font-size:10px;padding:3px 8px;border-radius:10px;font-weight:500}
 
 /* SECTION STRUCTURE */
-.section{padding:64px 32px;max-width:1100px;margin:0 auto}
+.section{padding:64px 32px;margin:0 auto}
 .section-eyebrow{font-size:11px;font-weight:500;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:12px}
 .section-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;line-height:1.15;letter-spacing:-0.8px;margin-bottom:12px}
 .section-body{font-size:15px;color:var(--ink-m);line-height:1.7;max-width:560px;font-weight:300}
@@ -83,12 +132,11 @@ nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.95);backdrop
 .cap-desc{font-size:13px;color:var(--ink-l);line-height:1.6}
 
 /* SCREENER */
-.screener-wrap{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:40px}
+
 .sw-header{background:var(--ink);padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
 .sw-title{font-size:15px;font-weight:500;color:white}
 .sw-sub{font-size:12px;color:rgba(255,255,255,0.5)}
-.sw-badge{background:var(--green);color:white;font-size:11px;padding:4px 10px;border-radius:10px;font-weight:500}
-.sw-body{padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.sw-badge{background:var(--green);color:white;font-size:12px;padding:4px 10px;border-radius:10px;font-weight:500}
 .screener-left{}
 .q-label{font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
 .q-row{margin-bottom:20px}
@@ -156,16 +204,44 @@ nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.95);backdrop
 .nb-success{display:none;background:var(--green-l);border-radius:8px;padding:12px;text-align:center;color:var(--green-d);font-size:13px;font-weight:500;margin-top:8px}
 
 /* CHATBOT STYLES */
-.screener-wrap{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:40px; display: flex; flex-direction: column;}
+.screener-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-top: 40px;
+  margin-left: 0;
+  margin-right: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sw-body {
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.chatWindow {
+  height: 500px;
+  overflow-y: auto;
+  padding: 24px;
+  background: var(--paper-m);
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%
+}
+.screener-wrap{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:40px;display:flex;flex-direction:column;}
 .sw-header{background:var(--ink);padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
 .sw-title{font-size:15px;font-weight:500;color:white}
 .sw-sub{font-size:12px;color:rgba(255,255,255,0.5)}
-.chat-window{height:400px; overflow-y:auto; padding:24px; background:var(--paper-m); display:flex; flex-direction:column; gap:16px;}
-.msg{max-width:80%; padding:12px 16px; border-radius:12px; font-size:14px; line-height:1.5; position:relative;}
-.msg-ai{background:var(--white); align-self:flex-start; border:1px solid var(--border); color:var(--ink);}
-.msg-user{background:var(--green); align-self:flex-end; color:white;}
-.chat-input-area{padding:20px; background:var(--white); border-top:1px solid var(--border); display:flex; gap:12px;}
-.chat-input{flex:1; padding:12px; border:1px solid var(--border); border-radius:8px; font-family:inherit; outline:none;}
+.msg{max-width:80%;padding:12px 16px;border-radius:12px;font-size:16px;line-height:1.5;position:relative;}
+.msg-ai{background:var(--white);align-self:flex-start;border:1px solid var(--border);color:var(--ink);}
+.msg-user{background:var(--green);align-self:flex-end;color:white;}
+.chat-input-area{padding:16px;background:var(--white);border-top:1px solid var(--border);display:flex;gap:12px;}
+.chat-input{flex:1;padding:12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;outline:none;}
 .chat-input:focus{border-color:var(--green);}
 
 /* WORKFORCE */
@@ -212,7 +288,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.95);backdrop
 
 /* FOOTER */
 footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margin-top:80px}
-.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:gap}
+.footer-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:gap}
 .footer-logo{font-family:'Playfair Display',serif;font-size:18px;color:white;margin-bottom:4px}
 .footer-sub{font-size:12px}
 .footer-partners{font-size:12px;text-align:right}
@@ -252,38 +328,21 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
   <div class="hero-left">
     <div class="hero-eyebrow">Hampton University Partnership · Food as Medicine</div>
     <h1 class="hero-title">Food is <em>medicine.</em> Technology is the bridge.</h1>
-    <p class="hero-body">CommunityBridge connects Hampton Roads residents to food, housing, and health resources — through AI-powered screening, real-time resource maps, and university-led pop-up markets that bring help directly to communities that need it most.</p>
+    <p class="hero-body">CommunityBridge connects Hampton Roads residents to food, housing, and health resources through AI-powered screening, real-time resource maps, and accessible food banks that bring help directly to communities that need it most.</p>
     <div class="hero-actions">
       <button class="btn-primary" onclick="document.getElementById('screener').scrollIntoView({behavior:'smooth'})">Check my eligibility</button>
       <button class="btn-outline" onclick="document.getElementById('markets').scrollIntoView({behavior:'smooth'})">Find a market near me</button>
     </div>
   </div>
-  <div class="hero-right">
-    <div class="hero-visual">
-      <div class="hv-header">
-        <div class="hv-dots"><div class="hv-dot"></div><div class="hv-dot"></div><div class="hv-dot"></div></div>
-        <div class="hv-title">USDA Geospatial SNAP Retail Locator</div>
-      </div>
-      <div class="hv-body">
-        <div id="map"></div>
-        <div class="ai-chip">
-          <strong>AI Screening Result</strong> — Based on your household profile
-          <div class="chip-tags">
-            <span class="ctag">✓ SNAP Eligible</span>
-            <span class="ctag">✓ WIC Eligible</span>
-            <span class="ctag">✓ LIHEAP Eligible</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="hero-stats" style="margin-top:12px">
-      <div class="hero-stat"><div class="hs-num">47K+</div><div class="hs-label">Food insecure residents</div></div>
-      <div class="hero-stat"><div class="hs-num">34</div><div class="hs-label">Active CHWs</div></div>
-      <div class="hero-stat"><div class="hs-num">83%</div><div class="hs-label">Referral success rate</div></div>
-    </div>
-  </div>
-</div>
 </section>
+<div style="padding: 0 32px; margin: 32px auto; max-width: 100%;">
+  <div class="hv-header" style="background:var(--green); padding:14px 18px; border-radius:10px 10px 0 0;">
+    <div class="hv-dots"><div class="hv-dot"></div><div class="hv-dot"></div><div class="hv-dot"></div></div>
+    <div class="hv-title">USDA Geospatial SNAP Retailer Locator</div>
+  </div>
+  <div id="map" style="height:400px; width:100%; border-radius: 0 0 10px 10px;"></div>
+</div>
+
 
 <div class="divider"></div>
 
@@ -291,14 +350,13 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
   <div class="sw-header">
     <div>
       <div class="sw-title">CommunityBridge AI</div>
-      <div class="sw-sub">Expert Guidance for SNAP & Local Benefits</div>
     </div>
-    <div class="sw-badge">Powered by Gemini</div>
+    <div class="sw-badge">Expert Guidance for SNAP & Local Benefits</div>
   </div>
-  <div class="sw-body" style="grid-template-columns: 1fr; max-height: 500px;">
-    <div id="chatWindow" style="height: 350px; overflow-y: auto; padding: 10px; background: var(--paper-m); border-radius: 8px; display: flex; flex-direction: column; gap: 12px;">
+  <div class="sw-body" style="grid-template-columns: 1fr; padding: 0;">
+    <div id="chatWindow" style="height: 600px; overflow-y: auto; padding: 24px; background: var(--paper-m); display: flex; flex-direction: column; gap: 12px;">
       <div class="ai-msg" style="align-self: flex-start; background: var(--white); padding: 12px; border-radius: 12px; border: 1px solid var(--border); max-width: 80%;">
-        <p style="font-size: 26px;">Hello! I'm your CommunityBridge assistant. To see if you qualify for SNAP, WIC, or LIHEAP, please tell me your <strong>household size, monthly income, and housing situation.</strong></p>
+        <p style="font-size: 16px;">Hello! I'm your CommunityBridge AI Assistant. To see if you qualify for SNAP, WIC, or LIHEAP, please tell me your <strong>household size, monthly income, and housing situation.</strong></p>
       </div>
     </div>
     
@@ -547,19 +605,6 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
       loadingMsg.innerHTML = 'Something went wrong: ' + err.message;
     }
   }
-
-  function formatReply(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')   // **bold**
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')               // *italic*
-    .replace(/^### (.+)$/gm, '<strong>$1</strong>')     // ### heading
-    .replace(/^## (.+)$/gm, '<strong>$1</strong>')      // ## heading
-    .replace(/^# (.+)$/gm, '<strong>$1</strong>')       // # heading
-    .replace(/^- (.+)$/gm, '<li>$1</li>')               // - list items
-    .replace(/(<li>.*<\/li>)/gs, '<ul style="margin:8px 0 8px 16px;">$1</ul>') // wrap lists
-    .replace(/\n\n/g, '<br><br>')                       // paragraph breaks
-    .replace(/\n/g, '<br>');                            // line breaks
-}
   
   function appendMessage(text, sender) {
     var chatWindow = document.getElementById('chatWindow');
@@ -622,6 +667,14 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
       return `<strong>${layer.feature.properties.Store_Name}</strong><br>${layer.feature.properties.Store_Street_Address}`;
     });
   });
+
+  function formatReply(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^[-•] (.+)$/gm, '<li style="margin-left:16px;">$1</li>')
+    .replace(/\n/g, '<br>');
+}
   </script>
 </body>
 </html>
