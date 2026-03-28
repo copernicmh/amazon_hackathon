@@ -55,7 +55,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.95);backdrop
 .hv-dots{display:flex;gap:5px}
 .hv-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.3)}
 .hv-title{font-size:12px;color:rgba(255,255,255,0.9);font-weight:500}
-.hv-body{padding:16px}
+.hv-body{padding:6px}
 #map{background:var(--paper-m);border-radius:8px;height:180px;position:relative;overflow:hidden;margin-bottom:12px;z-index:1}
 .ai-chip{background:var(--green-l);border:1px solid var(--green-m);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-d)}
 .ai-chip strong{font-weight:500}
@@ -223,7 +223,7 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
 <body>
 
 <nav>
-  <div class="nav-logo">FoodBridge <span>Hampton Roads, VA</span></div>
+  <div class="nav-logo">CommunityBridge <span>Hampton Roads, VA</span></div>
   <div class="nav-links">
     <button class="nav-link active" onclick="scrollTo('home')">Home</button>
     <button class="nav-link" onclick="scrollTo('screener')">Eligibility</button>
@@ -239,7 +239,7 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
   <div class="hero-left">
     <div class="hero-eyebrow">Hampton University Partnership · Food as Medicine</div>
     <h1 class="hero-title">Food is <em>medicine.</em> Technology is the bridge.</h1>
-    <p class="hero-body">FoodBridge connects Hampton Roads residents to food, housing, and health resources — through AI-powered screening, real-time resource maps, and university-led pop-up markets that bring help directly to communities that need it most.</p>
+    <p class="hero-body">CommunityBridge connects Hampton Roads residents to food, housing, and health resources — through AI-powered screening, real-time resource maps, and university-led pop-up markets that bring help directly to communities that need it most.</p>
     <div class="hero-actions">
       <button class="btn-primary" onclick="document.getElementById('screener').scrollIntoView({behavior:'smooth'})">Check my eligibility</button>
       <button class="btn-outline" onclick="document.getElementById('markets').scrollIntoView({behavior:'smooth'})">Find a market near me</button>
@@ -249,7 +249,7 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
     <div class="hero-visual">
       <div class="hv-header">
         <div class="hv-dots"><div class="hv-dot"></div><div class="hv-dot"></div><div class="hv-dot"></div></div>
-        <div class="hv-title">USDA SNAP Retailer Locator — Hampton Roads, VA</div>
+        <div class="hv-title">USDA Geospatial SNAP Retailer Locator</div>
       </div>
       <div class="hv-body">
         <div id="map"></div>
@@ -583,15 +583,15 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
   </div>
   <div style="margin-top:32px;background:var(--ink);border-radius:14px;padding:40px;text-align:center;color:white">
     <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:12px;line-height:1.2">A replicable model for national deployment</div>
-    <div style="font-size:15px;color:rgba(255,255,255,0.6);max-width:560px;margin:0 auto 24px;line-height:1.7;font-weight:300">FoodBridge is built to scale. Every data standard, university partnership model, and CHW training module is designed to be adopted by cities and regions across the country.</div>
-    <button class="btn-primary" style="font-size:14px" onclick="alert('Partner inquiry form would open here.')">Partner with FoodBridge →</button>
+    <div style="font-size:15px;color:rgba(255,255,255,0.6);max-width:560px;margin:0 auto 24px;line-height:1.7;font-weight:300">CommunityBridge is built to scale. Every data standard, university partnership model, and CHW training module is designed to be adopted by cities and regions across the country.</div>
+    <button class="btn-primary" style="font-size:14px" onclick="alert('Partner inquiry form would open here.')">Partner with CommunityBridge →</button>
   </div>
 </div>
 
 <footer>
   <div class="footer-inner">
     <div>
-      <div class="footer-logo">FoodBridge</div>
+      <div class="footer-logo">CommunityBridge</div>
       <div class="footer-sub">Hampton Roads, Virginia · Innovation for Food Security & Public Health</div>
     </div>
     <div class="footer-partners">
