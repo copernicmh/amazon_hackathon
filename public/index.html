@@ -290,7 +290,7 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
 <div class="screener-wrap">
   <div class="sw-header">
     <div>
-      <div class="sw-title">CommunityBridge AI Assistant</div>
+      <div class="sw-title">CommunityBridge AI</div>
       <div class="sw-sub">Expert Guidance for SNAP & Local Benefits</div>
     </div>
     <div class="sw-badge">Powered by Gemini</div>
@@ -516,146 +516,99 @@ footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margi
     </div>
   </div>
 </footer>
-
 <script>
-var state={hh:2,housing:null,circ:[],util:null};
-var SNAP_NET=[0,1580,2137,2694,3250,3807,4364,4921,5478];
-var SNAP_GROSS=[0,2311,3138,3964,4790,5616,6442,7268,8094];
-
-function scrollTo(id){
-  var el=document.getElementById(id);
-  if(el) el.scrollIntoView({behavior:'smooth'});
-  document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('active')});
-  event.target.classList.add('active');
-}
-
-function changeHH(d){
-  state.hh=Math.max(1,Math.min(8,state.hh+d));
-  document.getElementById('hhNum').textContent=state.hh;
-}
-
-function selOpt(key,val,el){
-  var parent=el.parentElement;
-  parent.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel')});
-  el.classList.add('sel');
-  state[key]=val;
-}
-
-function togMulti(key,val,el){
-  if(el.classList.contains('sel')){
-    el.classList.remove('sel');
-    state[key]=state[key].filter(function(v){return v!==val});
-  } else {
-    el.classList.add('sel');
-    state[key].push(val);
-  }
-}
-
-function runScreener(){
-  var inc=parseFloat(document.getElementById('incomeVal').value)||0;
-  var hh=Math.min(state.hh,8);
-  var snapNet=SNAP_NET[hh]||(SNAP_NET[8]+(hh-8)*557);
-  var snapGross=SNAP_GROSS[hh]||(SNAP_GROSS[8]+(hh-8)*826);
-  var results=[];
-
-  // SNAP
-  if(inc<=snapNet) results.push({name:'SNAP (Food Stamps)',badge:'qualify',desc:'Monthly food assistance for groceries.',benefit:'Up to $'+Math.min(1756,Math.round(snapNet*0.3+100))+'/mo · Virginia DSS Hampton'});
-  else if(inc<=snapGross) results.push({name:'SNAP (Food Stamps)',badge:'review',desc:'You may qualify depending on deductions.',benefit:'Needs case review · Virginia DSS'});
-
-  // WIC
-  if(state.circ.includes('pregnant')||state.circ.includes('children')){
-    if(inc<=snapGross*1.4) results.push({name:'WIC Program',badge:'qualify',desc:'Nutrition support for pregnant women and children under 5.',benefit:'Food vouchers + counseling · Hampton Health Dept.'});
-  }
-
-  // LIHEAP
-  if(state.util==='yes'||state.util==='maybe'){
-    if(inc<=snapNet*1.5) results.push({name:'LIHEAP — Utility Assistance',badge:'qualify',desc:'Federal heating and cooling bill assistance.',benefit:'Up to $1,200/season · Dept. of Social Services'});
-    results.push({name:'Dominion Energy Share',badge:'qualify',desc:'Bill credits and payment plans for financial hardship.',benefit:'Bill credit + payment plan · Apply online'});
-  }
-
-  // Housing
-  if(state.housing==='homeless'||state.housing==='unstable') results.push({name:'Emergency Housing',badge:'qualify',desc:'Shelter referrals and transitional housing navigation.',benefit:'Immediate · Hampton CSB 757-788-0300'});
-  if(state.housing==='rent'&&inc<=snapGross) results.push({name:'Emergency Rental Assistance (ERAP)',badge:'qualify',desc:'Covers past-due and forward rent.',benefit:'Up to $15,000 · Hampton Human Services'});
-
-  // Special
-  if(state.circ.includes('elderly')) results.push({name:'Senior Services of SEVA',badge:'qualify',desc:'Home-delivered meals and wellness check-ins for adults 60+.',benefit:'Meals + wellness · Senior Services of SEVA'});
-  if(state.circ.includes('disability')) results.push({name:'SSI — Disability Benefits',badge:'review',desc:'Monthly payments for adults with disabilities.',benefit:'Up to $943/mo · Social Security Administration'});
-
-  // Always add food bank
-  results.push({name:'Peninsula Food Bank — SNAP Navigator',badge:'qualify',desc:'Free in-person help completing your SNAP application.',benefit:'Walk-in Tue–Thu · 2401 Aluminum Ave, Hampton'});
-
-  var q=results.filter(function(r){return r.badge==='qualify'});
-  var rv=results.filter(function(r){return r.badge==='review'});
-
-  document.getElementById('rpTitle').textContent=q.length+' programs matched for your household';
-
-  var html='';
-  if(q.length){
-    html+='<div style="font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Likely eligible</div>';
-    q.forEach(function(p){html+=makeCard(p)});
-  }
-  if(rv.length){
-    html+='<div style="font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 8px">Needs review</div>';
-    rv.forEach(function(p){html+=makeCard(p)});
-  }
-  document.getElementById('resultsArea').innerHTML=html;
-}
-
-function makeCard(p){
-  var bc=p.badge==='qualify'?'rb-q':'rb-r';
-  var bl=p.badge==='qualify'?'Likely eligible':'Needs review';
-  var cls=p.badge==='qualify'?'result-item qualify':'result-item';
-  return '<div class="'+cls+'"><div class="ri-top"><div class="ri-name">'+p.name+'</div><span class="ri-badge '+bc+'">'+bl+'</span></div><div class="ri-desc">'+p.desc+'</div><div class="ri-benefit">'+p.benefit+'</div></div>';
-}
-
-function notifySignup(){
-  var ph=document.getElementById('notifyPhone').value;
-  var zip=document.getElementById('notifyZip').value;
-  if(!ph||!zip){alert('Please enter your phone number and select your ZIP code.');return;}
-  document.getElementById('notifySuccess').style.display='block';
-  document.getElementById('notifyPhone').value='';
-  document.getElementById('notifyZip').value='';
-}
-
-window.addEventListener('scroll',function(){
-  var sections=['home','screener','markets','workforce','impact'];
-  var links=document.querySelectorAll('.nav-link');
-  var cur='home';
-  sections.forEach(function(id){
-    var el=document.getElementById(id);
-    if(el&&el.getBoundingClientRect().top<100) cur=id;
-  });
-  links.forEach(function(l,i){
-    l.classList.toggle('active',sections[i]===cur);
-  });
-});
-
-// Map Initialization Script
-window.addEventListener('load', function() {
-  const map = L.map('map').setView([37.0299, -76.3452], 12);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap'
-  }).addTo(map);
-
-  const snapRetailers = L.esri.featureLayer({
-    url: 'https://services1.arcgis.com/RLQu0rK7h4kbsBq5/arcgis/rest/services/snap_retailer_location_data/FeatureServer/0',
-    where: "State = 'VA' AND (City = 'HAMPTON' OR City = 'NEWPORT NEWS')",
-    pointToLayer: function (geojson, latlng) {
-      return L.circleMarker(latlng, {
-        radius: 6,
-        fillColor: "#1D9E75",
-        color: "#fff",
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 0.8
+  var history = [];
+  
+  async function sendMessage() {
+    var input = document.getElementById('userInput');
+    var text = input.value.trim();
+    if (!text) return;
+  
+    appendMessage(text, 'user');
+    input.value = '';
+    history.push({ role: 'user', parts: [{ text: text }] });
+  
+    var loadingMsg = appendMessage('Checking eligibility...', 'ai');
+  
+    try {
+      var res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ history: history })
       });
+  
+      var data = await res.json();
+      if (data.error) throw new Error(data.error);
+  
+      loadingMsg.innerHTML = data.reply.replace(/\n/g, '<br>');
+      history.push({ role: 'model', parts: [{ text: data.reply }] });
+  
+    } catch (err) {
+      loadingMsg.innerHTML = 'Something went wrong: ' + err.message;
     }
-  }).addTo(map);
-
-  snapRetailers.bindPopup(function (layer) {
-    return `<strong>${layer.feature.properties.Store_Name}</strong><br>${layer.feature.properties.Store_Street_Address}`;
+  }
+  
+  function appendMessage(text, sender) {
+    var chatWindow = document.getElementById('chatWindow');
+    var msg = document.createElement('div');
+    msg.className = 'msg msg-' + sender;
+    msg.innerHTML = text;
+    chatWindow.appendChild(msg);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return msg;
+  }
+  
+  document.getElementById('userInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
-});
-</script>
+  
+  function notifySignup() {
+    var ph = document.getElementById('notifyPhone').value;
+    var zip = document.getElementById('notifyZip').value;
+    if (!ph || !zip) { alert('Please enter your phone number and select your ZIP code.'); return; }
+    document.getElementById('notifySuccess').style.display = 'block';
+    document.getElementById('notifyPhone').value = '';
+    document.getElementById('notifyZip').value = '';
+  }
+  
+  function scrollTo(id) {
+    var el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    document.querySelectorAll('.nav-link').forEach(function(l) { l.classList.remove('active'); });
+    event.target.classList.add('active');
+  }
+  
+  window.addEventListener('scroll', function() {
+    var sections = ['home', 'markets', 'workforce', 'impact'];
+    var links = document.querySelectorAll('.nav-link');
+    var cur = 'home';
+    sections.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 100) cur = id;
+    });
+    links.forEach(function(l, i) {
+      l.classList.toggle('active', sections[i] === cur);
+    });
+  });
+  
+  window.addEventListener('load', function() {
+    const map = L.map('map').setView([37.0299, -76.3452], 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+  
+    const snapRetailers = L.esri.featureLayer({
+      url: 'https://services1.arcgis.com/RLQu0rK7h4kbsBq5/arcgis/rest/services/snap_retailer_location_data/FeatureServer/0',
+      where: "State = 'VA' AND (City = 'HAMPTON' OR City = 'NEWPORT NEWS')",
+      pointToLayer: function(geojson, latlng) {
+        return L.circleMarker(latlng, { radius: 6, fillColor: '#1D9E75', color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.8 });
+      }
+    }).addTo(map);
+  
+    snapRetailers.bindPopup(function(layer) {
+      return `<strong>${layer.feature.properties.Store_Name}</strong><br>${layer.feature.properties.Store_Street_Address}`;
+    });
+  });
+  </script>
 </body>
 </html>
