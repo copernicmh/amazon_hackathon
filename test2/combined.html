@@ -1,0 +1,825 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Bridge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── TAB BAR ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .tab-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 9999;
+      display: flex;
+      height: 52px;
+      background: #111;
+      border-bottom: 2px solid #222;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+    }
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      transition: background 0.25s, color 0.25s;
+      background: #1a1a1a;
+      color: #888;
+    }
+    .tab-btn .tab-icon { font-size: 17px; }
+    .tab-btn:hover { background: #252525; color: #ccc; }
+
+    /* Active: Community Bridge → green accent */
+    #tab-bridge.active {
+      background: #1D9E75;
+      color: white;
+      box-shadow: inset 0 -3px 0 rgba(255,255,255,0.25);
+    }
+    /* Active: Harvest Heal → earthy green accent */
+    #tab-heal.active {
+      background: #2d5a3d;
+      color: white;
+      box-shadow: inset 0 -3px 0 rgba(255,255,255,0.25);
+    }
+
+    .tab-divider {
+      width: 1px;
+      background: #333;
+      flex-shrink: 0;
+    }
+
+    /* ── PAGE PANELS ─────────────────────────────────────────── */
+    .page-panel {
+      display: none;
+      padding-top: 52px; /* offset for tab bar */
+    }
+    .page-panel.active { display: block; }
+
+    /* ══════════════════════════════════════════════════════════
+       COMMUNITY BRIDGE STYLES
+    ══════════════════════════════════════════════════════════ */
+    #panel-bridge {
+      --green:#1D9E75;--green-d:#0F6E56;--green-l:#E1F5EE;--green-m:#9FE1CB;
+      --amber:#BA7517;--amber-l:#FAEEDA;--amber-m:#FAC775;
+      --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#B5D4F4;
+      --coral:#993C1D;--coral-l:#FAECE7;--coral-m:#F5C4B3;
+      --purple:#534AB7;--purple-l:#EEEDFE;--purple-m:#CECBF6;
+      --ink:#1a1a18;--ink-m:#444441;--ink-l:#888780;
+      --paper:#fafaf7;--paper-m:#f1efea;
+      font-family:'DM Sans',sans-serif;
+      background-color:var(--paper);
+      color:var(--ink);
+      line-height:1.5;
+    }
+
+    #panel-bridge nav {
+      position: sticky;
+      top: 52px;
+      width:100%;
+      background:rgba(250,250,247,0.95);
+      backdrop-filter:blur(10px);
+      z-index:800;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 40px;
+      border-bottom:1px solid var(--paper-m);
+    }
+    #panel-bridge .logo{font-family:'Playfair Display',serif;font-weight:900;font-size:22px;color:var(--ink);text-decoration:none}
+    #panel-bridge .nav-links{display:flex;gap:20px;align-items:center}
+    #panel-bridge .nav-link{text-decoration:none;color:var(--ink-m);font-size:13px;font-weight:500;transition:color .2s}
+    #panel-bridge .nav-link:hover{color:var(--green)}
+    #panel-bridge .nav-link-harvest {
+      background: var(--green-l);
+      color: var(--green-d);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.2s;
+    }
+    #panel-bridge .nav-link-harvest:hover { background: var(--green-m); }
+
+    #panel-bridge .section{padding:90px 40px;max-width:1200px;margin:0 auto}
+    #panel-bridge .section-eyebrow{color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:1px;font-size:12px;margin-bottom:15px}
+    #panel-bridge .section-title{font-family:'Playfair Display',serif;font-size:42px;margin-bottom:20px;line-height:1.1}
+    #panel-bridge .section-body{font-size:18px;color:var(--ink-m);max-width:700px;margin-bottom:40px}
+
+    #panel-bridge .screener-card{background:white;border-radius:24px;border:1px solid var(--paper-m);padding:40px;box-shadow:0 20px 40px rgba(0,0,0,0.03)}
+    #panel-bridge .q-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-bottom:30px}
+    #panel-bridge .q-label{display:block;font-weight:700;font-size:13px;color:var(--ink-l);margin-bottom:10px;text-transform:uppercase}
+    #panel-bridge input[type="number"], #panel-bridge select{width:100%;padding:14px;border-radius:12px;border:1.5px solid var(--paper-m);background:var(--paper);font-family:inherit;font-size:16px;outline:none}
+    #panel-bridge .checkbox-group{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    #panel-bridge .check-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--paper);border-radius:12px;cursor:pointer;border:1.5px solid transparent}
+    #panel-bridge .check-item:has(input:checked){background:var(--green-l);border-color:var(--green-m)}
+    #panel-bridge .btn-primary{background:var(--green);color:white;border:none;padding:16px 32px;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;width:100%}
+    #panel-bridge #b-results{margin-top:40px;display:none}
+    #panel-bridge .result-item{background:white;border:1px solid var(--paper-m);border-radius:16px;padding:24px;margin-bottom:16px;border-left:6px solid var(--paper-m)}
+    #panel-bridge .result-item.qualify{border-left-color:var(--green);background:var(--green-l)}
+    #panel-bridge .ri-top{display:flex;justify-content:space-between;margin-bottom:8px}
+    #panel-bridge .ri-name{font-weight:700;font-size:18px}
+    #panel-bridge .ri-badge{font-size:11px;padding:4px 8px;border-radius:6px;font-weight:700;text-transform:uppercase}
+    #panel-bridge .rb-q{background:var(--green);color:white}
+    #panel-bridge .markets-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:40px}
+    #panel-bridge .market-card{background:white;border:1px solid var(--paper-m);border-radius:20px;padding:20px;display:flex;gap:20px;margin-bottom:15px}
+    #panel-bridge .mc-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+    #panel-bridge .mc-info{flex:1}
+    #panel-bridge .mc-name{font-weight:700;font-size:18px;margin-bottom:4px}
+    #panel-bridge .mc-loc{font-size:13px;color:var(--ink-m)}
+    #panel-bridge .philosophy-banner{background:var(--ink);color:white;padding:80px 40px;border-radius:32px;margin:0 40px 40px;text-align:center}
+    #panel-bridge .philosophy-banner h2{font-family:'Playfair Display',serif;font-size:48px;margin-bottom:20px}
+    #panel-bridge footer{padding:60px 40px;background:var(--ink);color:white;text-align:center}
+
+    /* harvest card in bridge */
+    #panel-bridge .harvest-tab-btn {
+      display: inline-block;
+      margin-top: 10px;
+      font-weight: 700;
+      color: #0F6E56;
+      text-decoration: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 0;
+    }
+    #panel-bridge .harvest-tab-btn:hover { text-decoration: underline; }
+
+    /* ══════════════════════════════════════════════════════════
+       HARVEST HEAL STYLES
+    ══════════════════════════════════════════════════════════ */
+    #panel-heal {
+      --cream: #f5f0e8;
+      --warm: #ede6d6;
+      --paper: #faf7f2;
+      --ink: #1c1a14;
+      --ink2: #3d3a30;
+      --muted: #7a7060;
+      --border: #d4c9b0;
+      --border2: #c2b597;
+      --green: #2d5a3d;
+      --green2: #3d7a52;
+      --green3: #5a9e6f;
+      --green-light: #e8f2eb;
+      --snap: #1a5c9a;
+      --snap-light: #e8f1f9;
+      --snap-border: #b3cfe8;
+      --gold: #8a6a2a;
+      --gold-light: #f5ecd5;
+      --red: #8a2a2a;
+      --tag: #ebe4d5;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    #panel-heal .top-bar {
+      background: var(--green);
+      color: var(--cream);
+      text-align: center;
+      padding: 9px 20px;
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    #panel-heal .snap-badge-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 2px 10px;
+      margin-left: 10px;
+      font-size: 0.65rem;
+    }
+    #panel-heal .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px 100px; }
+    #panel-heal header {
+      border-bottom: 2px solid var(--border);
+      padding: 52px 0 44px;
+      margin-bottom: 52px;
+    }
+    #panel-heal .header-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 20px;
+    }
+    #panel-heal .eyebrow {
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--green2);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #panel-heal .eyebrow::before { content: '●'; font-size: 0.4rem; }
+    #panel-heal header h1 {
+      font-size: clamp(2.8rem, 6vw, 4.4rem);
+      font-weight: 700;
+      line-height: 1.04;
+      color: var(--ink);
+    }
+    #panel-heal header h1 em { font-style: italic; color: var(--green); }
+    #panel-heal header p {
+      margin-top: 14px;
+      font-size: 1.1rem;
+      color: var(--muted);
+      font-style: italic;
+      font-weight: 400;
+      max-width: 480px;
+      line-height: 1.6;
+    }
+    #panel-heal .snap-pill-header {
+      background: var(--snap-light);
+      border: 1.5px solid var(--snap-border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    #panel-heal .snap-pill-header .icon { font-size: 1.8rem; display: block; margin-bottom: 6px; }
+    #panel-heal .snap-pill-header strong {
+      display: block;
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--snap);
+      font-weight: 500;
+    }
+    #panel-heal .snap-pill-header span {
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.62rem;
+      color: #5580a0;
+      display: block;
+      margin-top: 3px;
+    }
+    #panel-heal .section-label {
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.67rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    #panel-heal .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    #panel-heal .symptom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(188px, 1fr));
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+    #panel-heal .symptom-btn {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 14px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      position: relative;
+      font-family: inherit;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    #panel-heal .symptom-btn:hover { border-color: var(--green3); box-shadow: 0 4px 12px rgba(45,90,61,0.1); transform: translateY(-2px); }
+    #panel-heal .symptom-btn.active { border-color: var(--green); background: var(--green-light); box-shadow: 0 4px 16px rgba(45,90,61,0.15); }
+    #panel-heal .s-emoji { font-size: 1.5rem; display: block; margin-bottom: 8px; }
+    #panel-heal .s-name { font-size: 1rem; font-weight: 700; color: var(--ink); display: block; margin-bottom: 2px; }
+    #panel-heal .s-cat { font-family: 'Inconsolata', monospace; font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    #panel-heal .check {
+      position: absolute; top: 10px; right: 10px;
+      width: 20px; height: 20px;
+      background: var(--green); border-radius: 50%;
+      color: white; font-size: 0.65rem;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0.4);
+      transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    #panel-heal .symptom-btn.active .check { opacity: 1; transform: scale(1); }
+    #panel-heal .action-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 48px; flex-wrap: wrap; }
+    #panel-heal .btn-main {
+      background: var(--green); color: white; border: none;
+      border-radius: 8px; padding: 14px 36px;
+      font-family: 'Inconsolata', monospace; font-size: 0.8rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s; font-weight: 500;
+    }
+    #panel-heal .btn-main:hover { background: var(--green2); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(45,90,61,0.25); }
+    #panel-heal .btn-main:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+    #panel-heal .btn-ghost {
+      background: white; color: var(--muted);
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 13px 18px;
+      font-family: 'Inconsolata', monospace; font-size: 0.75rem;
+      letter-spacing: 0.08em; cursor: pointer; transition: all 0.18s;
+    }
+    #panel-heal .btn-ghost:hover { color: var(--ink); border-color: var(--border2); }
+    #panel-heal .count-label { font-family: 'Inconsolata', monospace; font-size: 0.72rem; color: var(--muted); margin-left: auto; }
+    #panel-heal .count-label b { color: var(--green); }
+    #panel-heal #h-loading { display: none; text-align: center; padding: 60px 20px; }
+    #panel-heal .dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+    #panel-heal .dot { width: 8px; height: 8px; background: var(--green3); border-radius: 50%; animation: hbounce 1.2s ease-in-out infinite; }
+    #panel-heal .dot:nth-child(2) { animation-delay: 0.2s; }
+    #panel-heal .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes hbounce { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+    #panel-heal #h-loading p { font-style: italic; color: var(--muted); font-size: 1.05rem; }
+    #panel-heal #h-results { display: none; }
+    #panel-heal .intro-card {
+      background: white; border: 1.5px solid var(--border);
+      border-left: 4px solid var(--green); border-radius: 12px;
+      padding: 28px 32px; margin-bottom: 36px;
+      font-size: 1.08rem; font-style: italic; color: var(--ink2);
+      line-height: 1.8; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    #panel-heal .remedy-card {
+      background: white; border: 1.5px solid var(--border);
+      border-radius: 14px; margin-bottom: 20px; overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      animation: hfadeUp 0.4s ease both;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    #panel-heal .remedy-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.09); border-color: var(--border2); }
+    @keyframes hfadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    #panel-heal .remedy-top { padding: 24px 28px 20px; border-bottom: 1px solid var(--warm); }
+    #panel-heal .remedy-meta { display: flex; align-items: flex-start; gap: 16px; }
+    #panel-heal .remedy-emoji-big { font-size: 2.4rem; flex-shrink: 0; line-height: 1; margin-top: 2px; }
+    #panel-heal .remedy-title-block { flex: 1; }
+    #panel-heal .remedy-for { font-family: 'Inconsolata', monospace; font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--green2); margin-bottom: 4px; }
+    #panel-heal .remedy-food-name { font-size: 1.55rem; font-weight: 700; color: var(--ink); line-height: 1.1; }
+    #panel-heal .remedy-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    #panel-heal .rtag { font-family: 'Inconsolata', monospace; font-size: 0.6rem; background: var(--tag); border: 1px solid var(--border); color: var(--ink2); padding: 3px 9px; border-radius: 20px; letter-spacing: 0.06em; }
+    #panel-heal .rtag.tea { background: var(--green-light); border-color: #b5d4bf; color: var(--green); }
+    #panel-heal .remedy-body-text { font-size: 1.02rem; color: var(--ink2); line-height: 1.78; margin-top: 14px; }
+    #panel-heal .remedy-tip { font-size: 0.94rem; font-style: italic; color: var(--muted); margin-top: 10px; line-height: 1.7; }
+    #panel-heal .remedy-shop { padding: 18px 28px; background: var(--cream); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    #panel-heal .shop-label { font-family: 'Inconsolata', monospace; font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+    #panel-heal .btn-amazon {
+      display: inline-flex; align-items: center; gap: 7px; text-decoration: none;
+      background: #ff9900; color: #111; font-family: 'Inconsolata', monospace;
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.07em;
+      padding: 8px 15px; border-radius: 6px; transition: all 0.15s; border: 1.5px solid #e8880a;
+    }
+    #panel-heal .btn-amazon:hover { background: #e8880a; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(255,153,0,0.3); }
+    #panel-heal .btn-amazon svg { width: 13px; height: 13px; }
+    #panel-heal .btn-snap {
+      display: inline-flex; align-items: center; gap: 7px; text-decoration: none;
+      background: var(--snap-light); color: var(--snap); font-family: 'Inconsolata', monospace;
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.07em;
+      padding: 8px 15px; border-radius: 6px; transition: all 0.15s; border: 1.5px solid var(--snap-border);
+    }
+    #panel-heal .btn-snap:hover { background: #d1e5f5; border-color: var(--snap); transform: translateY(-1px); }
+    #panel-heal .snap-icon { font-size: 0.9rem; }
+    #panel-heal .alt-section { padding: 14px 28px 18px; border-top: 1px dashed var(--border); background: #fbf9f5; }
+    #panel-heal .alt-label { font-family: 'Inconsolata', monospace; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    #panel-heal .alt-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 0.9rem; }
+    #panel-heal .alt-name { font-weight: 700; color: var(--ink); }
+    #panel-heal .alt-benefit { color: var(--muted); font-style: italic; }
+    #panel-heal .snap-callout {
+      background: var(--snap-light); border: 1.5px solid var(--snap-border);
+      border-radius: 12px; padding: 24px 28px; display: flex; gap: 18px;
+      align-items: flex-start; margin-top: 36px;
+    }
+    #panel-heal .snap-callout-icon { font-size: 2rem; flex-shrink: 0; }
+    #panel-heal .snap-callout h3 { font-size: 1rem; font-weight: 700; color: var(--snap); margin-bottom: 6px; }
+    #panel-heal .snap-callout p { font-size: 0.88rem; color: var(--ink2); line-height: 1.7; font-family: 'Inconsolata', monospace; }
+    #panel-heal .snap-callout a { color: var(--snap); }
+    #panel-heal .table-wrap { overflow-x: auto; border-radius: 12px; border: 1.5px solid var(--border); }
+    #panel-heal .remedy-table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+    #panel-heal .remedy-table thead th { background: var(--green); color: white; font-family: 'Inconsolata', monospace; font-size: 0.63rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 13px 18px; text-align: left; font-weight: 400; }
+    #panel-heal .remedy-table tbody tr { border-top: 1px solid var(--warm); transition: background 0.14s; }
+    #panel-heal .remedy-table tbody tr:hover { background: var(--green-light); }
+    #panel-heal .remedy-table td { padding: 13px 18px; vertical-align: middle; color: var(--ink2); }
+    #panel-heal .remedy-table td:first-child { font-weight: 700; color: var(--ink); }
+    #panel-heal .remedy-table td:nth-child(2) { color: var(--green2); font-weight: 600; }
+    #panel-heal .tbl-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    #panel-heal .tbl-amazon { font-family: 'Inconsolata', monospace; font-size: 0.62rem; background: #fff8ee; border: 1px solid #f5c97a; color: #8a5a00; padding: 4px 10px; border-radius: 5px; text-decoration: none; transition: all 0.14s; display: inline-flex; align-items: center; gap: 4px; }
+    #panel-heal .tbl-amazon:hover { background: #ffe0a0; border-color: #e8a020; }
+    #panel-heal .tbl-snap { font-family: 'Inconsolata', monospace; font-size: 0.62rem; background: var(--snap-light); border: 1px solid var(--snap-border); color: var(--snap); padding: 4px 10px; border-radius: 5px; text-decoration: none; transition: all 0.14s; display: inline-flex; align-items: center; gap: 4px; }
+    #panel-heal .tbl-snap:hover { background: #c5ddf0; border-color: var(--snap); }
+    #panel-heal footer { text-align: center; padding: 40px 0 0; border-top: 1.5px solid var(--border); margin-top: 64px; }
+    #panel-heal footer p { font-family: 'Inconsolata', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; line-height: 2; }
+
+    @media(max-width:600px){
+      #panel-heal .symptom-grid{grid-template-columns:1fr 1fr;}
+      #panel-heal header h1{font-size:2.4rem;}
+      #panel-heal .header-grid{grid-template-columns:1fr;}
+      #panel-heal .snap-pill-header{display:none;}
+      #panel-heal .remedy-shop{flex-direction:column;align-items:flex-start;}
+      #panel-bridge .markets-grid{grid-template-columns:1fr;}
+      #panel-bridge .q-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── TAB BAR ─────────────────────────────────────────────── -->
+<div class="tab-bar">
+  <button class="tab-btn active" id="tab-bridge" onclick="switchTab('bridge')">
+    <span class="tab-icon">🌉</span> Community Bridge
+  </button>
+  <div class="tab-divider"></div>
+  <button class="tab-btn" id="tab-heal" onclick="switchTab('heal')">
+    <span class="tab-icon">🌿</span> Harvest Heal
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PANEL 1: COMMUNITY BRIDGE
+══════════════════════════════════════════════════════════ -->
+<div class="page-panel active" id="panel-bridge">
+
+  <nav>
+    <a href="#" class="logo">Community Bridge</a>
+    <div class="nav-links">
+      <a href="#b-screener" class="nav-link">Screener</a>
+      <a href="#b-markets" class="nav-link">Markets</a>
+      <a href="https://www.doctronic.ai/" target="_blank" class="nav-link">Dr. AI</a>
+      <a href="https://www.instacart.com/ebt-snap" target="_blank" class="nav-link">EBT Delivery</a>
+      <a href="https://virginiaworks.gov/im-a-job-seeker/" target="_blank" class="nav-link">Job Seekers</a>
+      <button class="nav-link-harvest" onclick="switchTab('heal')">🌿 Harvest Heal</button>
+    </div>
+  </nav>
+
+  <div class="section" id="b-home" style="padding-top:80px">
+    <div class="section-eyebrow">FoodBridge Initiative</div>
+    <h1 class="section-title">Bridging the gap between <br>Nutrition & Healthcare</h1>
+    <p class="section-body">A real-time ecosystem connecting Hampton Roads residents to SNAP delivery, social resources, and AI-driven healthcare guidance.</p>
+  </div>
+
+  <div class="philosophy-banner">
+    <h2>Food <em>is</em> Medicine</h2>
+    <p style="max-width:800px;margin:0 auto;opacity:0.8;font-size:18px">Providing calories is relief. Providing nutrition is healthcare.</p>
+  </div>
+
+  <div class="section" id="b-screener">
+    <div class="section-eyebrow">AI Eligibility Engine</div>
+    <h2 class="section-title">See what you qualify for</h2>
+    <div class="screener-card">
+      <div class="q-grid">
+        <div>
+          <label class="q-label">Household Size</label>
+          <input type="number" id="hhSize" value="1">
+        </div>
+        <div>
+          <label class="q-label">Monthly Gross Income</label>
+          <input type="number" id="income" placeholder="$">
+        </div>
+      </div>
+      <div class="checkbox-group" style="margin-bottom:30px">
+        <label class="check-item"><input type="checkbox" id="chronic"> <span>Chronic Condition</span></label>
+        <label class="check-item"><input type="checkbox" id="kids"> <span>Children (Under 5)</span></label>
+        <label class="check-item"><input type="checkbox" id="senior"> <span>Senior (60+)</span></label>
+        <label class="check-item"><input type="checkbox" id="pregnant"> <span>Pregnant</span></label>
+      </div>
+      <button class="btn-primary" onclick="runScreener()">Analyze My Eligibility</button>
+      <div id="b-results">
+        <div id="b-resultsArea"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="b-markets">
+    <div class="section-eyebrow">Community Events</div>
+    <h2 class="section-title">Workforce & Resource Hub</h2>
+    <div class="markets-grid">
+      <div class="market-list">
+
+        <!-- Harvest Heal Card -->
+        <div class="market-card" style="background:#E1F5EE; border-color:#9FE1CB">
+          <div class="mc-icon" style="background:#1D9E75; color:white">🌿</div>
+          <div class="mc-info">
+            <div class="mc-name" style="color:#0F6E56">Harvest Heal</div>
+            <div class="mc-loc">Food as Medicine · Natural Remedy Guide</div>
+            <p style="font-size:12px; margin-top:5px">Select your symptoms and discover SNAP/EBT-eligible foods, teas, and remedies backed by nutritional science.</p>
+            <button class="harvest-tab-btn" onclick="switchTab('heal')">Open Remedy Guide →</button>
+          </div>
+        </div>
+
+        <!-- Job Seeker Card -->
+        <div class="market-card" style="background:#FAEEDA; border-color:#FAC775">
+          <div class="mc-icon" style="background:#BA7517; color:white">💼</div>
+          <div class="mc-info">
+            <div class="mc-name" style="color:#BA7517">Virginia Job Seeker Portal</div>
+            <div class="mc-loc">Career Services & Unemployment Resources</div>
+            <p style="font-size:12px; margin-top:5px">Find jobs, training programs, and career assistance across Virginia.</p>
+            <a href="https://virginiaworks.gov/im-a-job-seeker/" target="_blank" style="display:inline-block; margin-top:10px; font-weight:700; color:#BA7517; text-decoration:none">Access Portal →</a>
+          </div>
+        </div>
+
+        <!-- Dr. AI -->
+        <div class="market-card" style="background:#EEEDFE; border-color:#CECBF6">
+          <div class="mc-icon" style="background:#534AB7; color:white">🩺</div>
+          <div class="mc-info">
+            <div class="mc-name" style="color:#534AB7">Doctronic Dr. AI</div>
+            <div class="mc-loc">Virtual Symptom Checker</div>
+            <a href="https://www.doctronic.ai/" target="_blank" style="display:inline-block; margin-top:10px; font-weight:700; color:#534AB7; text-decoration:none">Start Consultation →</a>
+          </div>
+        </div>
+
+        <!-- VA Works Calendar -->
+        <div class="market-card" style="background:#E6F1FB; border-color:#B5D4F4">
+          <div class="mc-icon" style="background:#185FA5; color:white">🏛️</div>
+          <div class="mc-info">
+            <div class="mc-name" style="color:#185FA5">Virginia Works Calendar</div>
+            <div class="mc-loc">Workforce Events</div>
+            <a href="https://virginiaworks.gov/events/" target="_blank" style="display:inline-block; margin-top:10px; font-weight:700; color:#185FA5; text-decoration:none">Open Calendar →</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="background:#f1efea; padding:30px; border-radius:24px">
+        <h3 style="margin-bottom:15px">EBT Snap Delivery</h3>
+        <p style="font-size:14px; margin-bottom:20px">Order groceries to your door using your SNAP benefits.</p>
+        <a href="https://www.instacart.com/ebt-snap" target="_blank" style="text-decoration:none">
+          <button class="btn-primary" style="background:#1D9E75">Order with SNAP/EBT</button>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Community Bridge Initiative. Built for Hampton Roads.</p>
+  </footer>
+</div><!-- /panel-bridge -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     PANEL 2: HARVEST HEAL
+══════════════════════════════════════════════════════════ -->
+<div class="page-panel" id="panel-heal">
+
+  <div class="top-bar">
+    🌿 Food as Medicine — Natural Remedies for Everyday Ailments
+    <span class="snap-badge-top">🛒 SNAP/EBT Eligible Options Included</span>
+  </div>
+
+  <div class="wrap">
+    <header>
+      <div class="header-grid">
+        <div class="header-left">
+          <div class="eyebrow">Harvest Heal · Natural Nutrition Guide</div>
+          <h1>What's your body<br>telling <em>you?</em></h1>
+          <p>Select your symptoms and discover the foods, teas, and remedies nature designed to help — with options available on SNAP/EBT.</p>
+        </div>
+        <div class="snap-pill-header">
+          <span class="icon">🛒</span>
+          <strong>SNAP Eligible</strong>
+          <span>Options available<br>for all remedies</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="section-label">Choose your symptoms</div>
+    <div class="symptom-grid" id="h-symptomGrid"></div>
+
+    <div class="action-bar">
+      <button class="btn-main" id="h-getBtn" onclick="hGetResults()" disabled>Get My Remedies</button>
+      <button class="btn-ghost" onclick="hClearAll()">Clear</button>
+      <span class="count-label">Selected: <b id="h-cnt">0</b></span>
+    </div>
+
+    <div id="h-loading">
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <p>Searching nature's pantry for you…</p>
+    </div>
+
+    <div id="h-results"></div>
+  </div>
+
+</div><!-- /panel-heal -->
+
+
+<!-- ── SCRIPTS ─────────────────────────────────────────────── -->
+<script>
+// ── Tab switching ──────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── Community Bridge screener ──────────────────────────────
+function runScreener(){
+  const income = parseFloat(document.getElementById('income').value) || 0;
+  const size   = parseInt(document.getElementById('hhSize').value) || 1;
+  const chronic = document.getElementById('chronic').checked;
+  let html = '<h3 style="margin-bottom:20px">Your Results:</h3>';
+  if(income < (1500 + (size * 500))){
+    html += bMakeResult('SNAP Benefits','Likely eligible for monthly food assistance.','Up to $291/month');
+    html += bMakeResult('EBT Home Delivery','Order groceries online with Instacart EBT.','<a href="https://www.instacart.com/ebt-snap" target="_blank">Order Now</a>');
+  }
+  if(chronic){
+    html += bMakeResult('Doctronic Dr. AI','Symptom checking for chronic conditions.','<a href="https://www.doctronic.ai/" target="_blank">Launch AI</a>');
+    html += `<div class="result-item qualify" style="cursor:pointer" onclick="switchTab('heal')">
+      <div class="ri-top"><div class="ri-name">🌿 Harvest Heal</div><span class="ri-badge rb-q">Recommended</span></div>
+      <div class="ri-desc">Discover food remedies for your chronic condition — all SNAP/EBT eligible.</div>
+      <div style="font-size:12px;font-weight:700;margin-top:10px;color:#1D9E75">Open Remedy Guide →</div>
+    </div>`;
+  }
+  document.getElementById('b-resultsArea').innerHTML = html;
+  document.getElementById('b-results').style.display = 'block';
+}
+function bMakeResult(name, desc, benefit){
+  return `<div class="result-item qualify">
+    <div class="ri-top"><div class="ri-name">${name}</div><span class="ri-badge rb-q">Eligible</span></div>
+    <div class="ri-desc">${desc}</div>
+    <div style="font-size:12px;font-weight:700;margin-top:10px;color:#1D9E75">${benefit}</div>
+  </div>`;
+}
+
+// ── Harvest Heal logic ─────────────────────────────────────
+const H_SYMPTOMS = [
+  {id:'inflammation', name:'Inflammation',      emoji:'🔥', cat:'Pain & Recovery'},
+  {id:'joint_pain',   name:'Joint Pain',        emoji:'🦴', cat:'Pain & Recovery'},
+  {id:'headache',     name:'Headache',          emoji:'🤕', cat:'Pain & Recovery'},
+  {id:'cold_flu',     name:'Cold & Flu',        emoji:'🤧', cat:'Immune Support'},
+  {id:'congestion',   name:'Congestion',        emoji:'😮‍💨', cat:'Immune Support'},
+  {id:'sore_throat',  name:'Sore Throat',       emoji:'🫁', cat:'Immune Support'},
+  {id:'nausea',       name:'Nausea',            emoji:'🤢', cat:'Digestive Health'},
+  {id:'bloating',     name:'Bloating / Gas',    emoji:'💨', cat:'Digestive Health'},
+  {id:'skin',         name:'Skin Irritation',   emoji:'🌡️', cat:'Skin Health'},
+  {id:'fatigue',      name:'Fatigue',           emoji:'😴', cat:'Energy & Wellness'},
+  {id:'stress',       name:'Stress & Anxiety',  emoji:'😰', cat:'Mental Wellness'},
+  {id:'sleep',        name:'Poor Sleep',        emoji:'🌙', cat:'Mental Wellness'},
+];
+const H_DATA = {
+  inflammation:{food:'Fatty Fish (Salmon, Sardines, Mackerel)',emoji:'🐟',explain:'Rich in Omega-3 fatty acids, fatty fish help block the enzymes that produce inflammatory compounds. Regular consumption is linked to meaningfully lower markers of systemic inflammation.',tip:"Canned sardines and salmon are equally effective — and far more affordable. Look for versions packed in water or olive oil.",tags:['Omega-3','Anti-inflammatory','Vitamin D'],tea:'Turmeric & Ginger Tea',amazon:'canned+wild+caught+salmon',snap:'fresh+salmon+fillets',alt:{food:'Walnuts',emoji:'🌰',benefit:'High in ALA (alpha-linolenic acid)',amazon:'raw+walnuts',snap:'walnuts+bulk'}},
+  joint_pain:{food:'Extra Virgin Olive Oil',emoji:'🫒',explain:'Oleocanthal — a natural compound in extra virgin olive oil — inhibits the same inflammatory enzymes as ibuprofen, making it a powerful daily addition to meals for joint support.',tip:'Use it as a finishing drizzle rather than cooking it at high heat to preserve its active compounds.',tags:['Oleocanthal','Antioxidant','Joint Support'],tea:'Ginger Root Tea',amazon:'extra+virgin+olive+oil+cold+pressed',snap:'olive+oil+grocery',alt:{food:'Blueberries',emoji:'🫐',benefit:'Anthocyanins that reduce joint soreness & aid recovery',amazon:'freeze+dried+blueberries',snap:'fresh+blueberries'}},
+  headache:{food:'Watermelon or Cucumber',emoji:'🍉',explain:'Dehydration is one of the most common headache triggers. Watermelon and cucumber have among the highest water content of any whole food, rapidly restoring fluid and electrolyte balance.',tip:'Add a pinch of sea salt to cucumber slices to boost electrolyte replenishment even further.',tags:['Hydration','Magnesium','Electrolytes'],tea:'Peppermint Tea',amazon:'electrolyte+powder+packets',snap:'fresh+watermelon',alt:{food:'Almonds',emoji:'🥜',benefit:'High in magnesium, which relaxes blood vessels',amazon:'raw+almonds',snap:'almonds+bulk+grocery'}},
+  cold_flu:{food:'Garlic',emoji:'🧄',explain:'Garlic contains allicin — a sulfur compound activated when you crush or chew it — that has been shown to boost immune cell activity and may reduce the severity and duration of cold symptoms.',tip:'Crush garlic and let it sit 10 minutes before cooking or eating raw to maximize allicin formation.',tags:['Allicin','Immune Boost','Antiviral'],tea:'Elderberry & Echinacea Tea',amazon:'garlic+supplement+allicin',snap:'fresh+garlic+bulbs',alt:{food:'Citrus Fruits',emoji:'🍊',benefit:'Vitamin C to shorten cold duration',amazon:'vitamin+c+supplement',snap:'fresh+oranges+lemons'}},
+  congestion:{food:'Spicy Radishes or Horseradish',emoji:'🌶️',explain:'Isothiocyanates — the pungent compounds in horseradish and radishes — act as natural decongestants, thinning mucus and helping clear blocked sinuses rapidly, sometimes within minutes.',tip:'Grate fresh horseradish into warm broth. The steam combined with the compounds creates a doubly powerful effect.',tags:['Decongestant','Mucus Relief','Sinus'],tea:'Peppermint & Eucalyptus Tea',amazon:'horseradish+prepared',snap:'fresh+radishes+horseradish',alt:{food:'Spicy Broth with Ginger',emoji:'🍲',benefit:'Steam + spice works synergistically for relief',amazon:'ginger+tea+bags',snap:'fresh+ginger+root'}},
+  sore_throat:{food:'Warm Bone or Vegetable Broth',emoji:'🍜',explain:'Warm broth works on two levels: the natural salt reduces swelling in irritated throat tissues, while the heat increases local blood flow to accelerate healing. Bone broth collagen may also coat and soothe the throat.',tip:'Stir in a teaspoon of raw honey (not boiling, just warm) for added antibacterial and soothing effect.',tags:['Anti-swelling','Warming','Collagen'],tea:'Honey Lemon & Ginger Tea',amazon:'organic+bone+broth',snap:'vegetable+broth+chicken+broth',alt:{food:'Raw Honey',emoji:'🍯',benefit:'Natural antibacterial that coats and soothes',amazon:'raw+manuka+honey',snap:'honey+grocery'}},
+  nausea:{food:'Plain Crackers or Pretzels',emoji:'🫙',explain:"Starchy, bland foods absorb excess stomach acid and calm gastric churning without introducing smells or flavors that could make nausea worse. The mild salt also helps restore electrolytes.",tip:"Keep them at your bedside if morning nausea is an issue — eating a few before rising can prevent it from escalating.",tags:['Bland Diet','Stomach Soothing','Electrolytes'],tea:'Ginger Root Tea',amazon:'ginger+chews+nausea+relief',snap:'saltine+crackers+pretzels',alt:{food:'Bananas',emoji:'🍌',benefit:'Easy to digest and rich in potassium',amazon:'banana+chips+dried',snap:'fresh+bananas'}},
+  bloating:{food:'Papaya',emoji:'🍈',explain:"Papaya contains papain, a digestive enzyme that breaks down proteins efficiently, reducing the fermentation that causes bloating and gas. It makes the gut's job significantly easier.",tip:'Eat papaya at the start of a meal for the best enzymatic effect on the food that follows.',tags:['Papain Enzyme','Protein Digestion','Gut Health'],tea:'Fennel & Peppermint Tea',amazon:'papaya+enzyme+digestive+supplement',snap:'fresh+papaya',alt:{food:'Fennel Seeds',emoji:'🌱',benefit:'Centuries-old remedy for immediate gas relief',amazon:'fennel+seeds',snap:'fennel+seeds+spice'}},
+  skin:{food:'Sweet Potatoes',emoji:'🍠',explain:'Sweet potatoes are one of the richest sources of beta-carotene, which the body converts to Vitamin A — critical for skin cell production, barrier repair, and reducing surface-level inflammation.',tip:'Cooking sweet potatoes with a small amount of fat (like olive oil) dramatically increases beta-carotene absorption.',tags:['Beta-carotene','Vitamin A','Skin Barrier'],tea:'Chamomile Tea',amazon:'vitamin+a+retinol+supplement',snap:'fresh+sweet+potatoes',alt:{food:'Avocado',emoji:'🥑',benefit:'Healthy fats and Vitamin E nourish and repair skin',amazon:'avocado+oil+food+grade',snap:'fresh+avocados'}},
+  fatigue:{food:'Steel-Cut Oatmeal',emoji:'🌾',explain:"Steel-cut oats are a complex carbohydrate that releases glucose slowly and steadily into the bloodstream, sustaining energy for hours without the spike-and-crash of simple sugars or refined grains.",tip:"Add pumpkin seeds on top — they're rich in iron and magnesium, two of the most common nutritional causes of fatigue.",tags:['Complex Carbs','Slow Release','B Vitamins'],tea:'Matcha Green Tea',amazon:'steel+cut+oats',snap:'oatmeal+steel+cut+rolled+oats',alt:{food:'Pumpkin Seeds',emoji:'🎃',benefit:'Rich in iron and magnesium for sustained energy',amazon:'pumpkin+seeds+roasted',snap:'pumpkin+seeds+grocery'}},
+  stress:{food:'Dark Chocolate (70%+ Cocoa)',emoji:'🍫',explain:'High-cocoa dark chocolate contains flavonoids that may reduce cortisol (the stress hormone) and improve blood flow to the brain, while also providing a genuine mood-lifting effect.',tip:"A 1-oz square is enough to get the benefit — go for the highest cocoa percentage you enjoy.",tags:['Cortisol Reduction','Flavonoids','Mood Support'],tea:'Ashwagandha & Chamomile Tea',amazon:'dark+chocolate+70+percent+cocoa',snap:'dark+chocolate+grocery',alt:{food:'Blueberries',emoji:'🫐',benefit:'Antioxidants that protect the brain from stress damage',amazon:'blueberries+frozen',snap:'fresh+blueberries+frozen'}},
+  sleep:{food:'Kiwi',emoji:'🥝',explain:'Multiple clinical studies show eating two kiwis about an hour before bed can improve how quickly you fall asleep and total sleep duration — likely due to their high serotonin (melatonin precursor) and antioxidant content.',tip:'Tart cherry juice is a powerful alternative — one of the only natural food sources of melatonin, with measurable effects in clinical trials.',tags:['Serotonin','Melatonin Precursor','Antioxidants'],tea:'Valerian Root & Lavender Tea',amazon:'tart+cherry+juice+concentrate',snap:'fresh+kiwi+fruit',alt:{food:'Tart Cherry Juice',emoji:'🍒',benefit:'One of few natural food sources of melatonin',amazon:'tart+cherry+juice',snap:'tart+cherry+juice+grocery'}},
+};
+const H_TABLE = [
+  {issue:'Inflammation',food:'Walnuts',emoji:'🌰',benefit:'High in alpha-linolenic acid (ALA)',amazon:'raw+walnuts',snap:'walnuts+bulk'},
+  {issue:'Fatigue',food:'Pumpkin Seeds',emoji:'🎃',benefit:'Rich in iron and magnesium for energy',amazon:'pumpkin+seeds+roasted',snap:'pumpkin+seeds+grocery'},
+  {issue:'Nausea',food:'Bananas',emoji:'🍌',benefit:'Easy to digest and provides potassium',amazon:'fresh+bananas',snap:'fresh+bananas'},
+  {issue:'Joint Pain',food:'Blueberries',emoji:'🫐',benefit:'Packed with anthocyanins for recovery',amazon:'freeze+dried+blueberries',snap:'fresh+blueberries'},
+];
+
+let hSelected = new Set();
+
+function hRenderSymptoms(){
+  document.getElementById('h-symptomGrid').innerHTML = H_SYMPTOMS.map(s=>`
+    <button class="symptom-btn" id="h-btn_${s.id}" onclick="hToggle('${s.id}')">
+      <span class="check">✓</span>
+      <span class="s-emoji">${s.emoji}</span>
+      <span class="s-name">${s.name}</span>
+      <span class="s-cat">${s.cat}</span>
+    </button>`).join('');
+}
+function hToggle(id){
+  hSelected.has(id) ? hSelected.delete(id) : hSelected.add(id);
+  document.getElementById('h-btn_'+id).classList.toggle('active', hSelected.has(id));
+  document.getElementById('h-cnt').textContent = hSelected.size;
+  document.getElementById('h-getBtn').disabled = hSelected.size === 0;
+}
+function hClearAll(){
+  hSelected.forEach(id => document.getElementById('h-btn_'+id).classList.remove('active'));
+  hSelected.clear();
+  document.getElementById('h-cnt').textContent = 0;
+  document.getElementById('h-getBtn').disabled = true;
+  document.getElementById('h-results').style.display = 'none';
+  document.getElementById('h-results').innerHTML = '';
+}
+function hAmzLink(q, label, cls){
+  const url = `https://www.amazon.com/s?k=${q}`;
+  if(cls==='snap') return `<a class="btn-snap" href="${url}" target="_blank" rel="noopener"><span class="snap-icon">🛒</span>${label||'SNAP/EBT on Amazon'}</a>`;
+  return `<a class="btn-amazon" href="${url}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>${label||'Shop on Amazon'}</a>`;
+}
+function hTblAmz(q, label, cls){
+  const url = `https://www.amazon.com/s?k=${q}`;
+  return `<a class="${cls==='snap'?'tbl-snap':'tbl-amazon'}" href="${url}" target="_blank" rel="noopener">${cls==='snap'?'🛒 SNAP':'↗ Amazon'}</a>`;
+}
+
+async function hGetResults(){
+  if(!hSelected.size) return;
+  document.getElementById('h-loading').style.display = 'block';
+  document.getElementById('h-results').style.display = 'none';
+  document.getElementById('h-results').innerHTML = '';
+  document.getElementById('h-getBtn').disabled = true;
+
+  const symptomNames = [...hSelected].map(id => H_SYMPTOMS.find(s=>s.id===id).name).join(', ');
+  const cards = [...hSelected].map((id,i)=>{
+    const d = H_DATA[id]; const s = H_SYMPTOMS.find(x=>x.id===id);
+    if(!d) return '';
+    return `<div class="remedy-card" style="animation-delay:${i*90}ms">
+      <div class="remedy-top">
+        <div class="remedy-meta">
+          <span class="remedy-emoji-big">${d.emoji}</span>
+          <div class="remedy-title-block">
+            <div class="remedy-for">For ${s.name}</div>
+            <div class="remedy-food-name">${d.food}</div>
+          </div>
+        </div>
+        <p class="remedy-body-text">${d.explain}</p>
+        <p class="remedy-tip">💡 ${d.tip}</p>
+        <div class="remedy-tags">
+          ${d.tags.map(t=>`<span class="rtag">${t}</span>`).join('')}
+          <span class="rtag tea">☕ ${d.tea}</span>
+        </div>
+      </div>
+      <div class="remedy-shop">
+        <span class="shop-label">Shop</span>
+        ${hAmzLink(d.amazon,'Amazon')}
+        ${hAmzLink(d.snap,'SNAP/EBT Eligible','snap')}
+      </div>
+      ${d.alt?`<div class="alt-section">
+        <div class="alt-label">Alternative Pick</div>
+        <div class="alt-row">
+          <span>${d.alt.emoji}</span>
+          <span class="alt-name">${d.alt.food}</span>
+          <span class="alt-benefit">— ${d.alt.benefit}</span>
+          ${hAmzLink(d.alt.amazon,'Amazon')}
+          ${hAmzLink(d.alt.snap,'SNAP/EBT','snap')}
+        </div>
+      </div>`:''}
+    </div>`;
+  }).join('');
+
+  let intro = `Based on your symptoms — <em>${symptomNames}</em> — here is your personalized food remedy plan, drawing from nutritional science and traditional wellness. Every recommendation below has a SNAP/EBT-eligible option so everyone can access nature's medicine.`;
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:`You are a warm, inclusive, knowledgeable nutritionist. Write a brief 2-3 sentence personalized intro (no lists, no headers) for someone experiencing the given symptoms. Be specific to their symptoms. Keep language warm, accessible, and encouraging. Mention that SNAP/EBT-eligible options are available so everyone has access. End with an uplifting note about food as medicine.`,
+        messages:[{role:'user',content:`My symptoms are: ${symptomNames}. Write a personalized intro for my food remedy plan.`}]
+      })
+    });
+    const data = await resp.json();
+    intro = data.content?.[0]?.text || intro;
+  } catch(e){}
+
+  const table = `<div style="margin-top:52px">
+    <div class="section-label">Quick Comparison — Bonus Remedies</div>
+    <div class="table-wrap"><table class="remedy-table">
+      <thead><tr><th>Issue</th><th>Recommended Food</th><th>Key Benefit</th><th>Shop Options</th></tr></thead>
+      <tbody>${H_TABLE.map(r=>`<tr>
+        <td>${r.emoji} ${r.issue}</td><td>${r.food}</td><td>${r.benefit}</td>
+        <td><div class="tbl-links">${hTblAmz(r.amazon,'Amazon','amazon')}${hTblAmz(r.snap,'SNAP','snap')}</div></td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>`;
+
+  const snapCallout = `<div class="snap-callout">
+    <span class="snap-callout-icon">🛒</span>
+    <div>
+      <h3>About SNAP/EBT on Amazon</h3>
+      <p>Amazon accepts SNAP/EBT benefits for eligible grocery items in most U.S. states. Every "SNAP/EBT Eligible" link above searches Amazon Fresh and Amazon Grocery for items purchasable with your benefits card. Look for the <strong>"SNAP EBT eligible"</strong> badge on listings. <a href="https://www.amazon.com/snap-ebt/b/?node=19097785011" target="_blank">Learn more about Amazon SNAP ↗</a></p>
+    </div>
+  </div>`;
+
+  document.getElementById('h-loading').style.display = 'none';
+  const el = document.getElementById('h-results');
+  el.style.display = 'block';
+  el.innerHTML = `
+    <div class="section-label">Your personalized remedy plan</div>
+    <div class="intro-card">${intro}</div>
+    ${cards}${snapCallout}${table}
+    <footer style="margin-top:52px">
+      <p>Harvest Heal · Powered by Claude AI · This tool is for informational purposes only and does not constitute medical advice.<br>
+      Always consult a healthcare professional for persistent or serious symptoms.<br>
+      SNAP/EBT eligibility on Amazon varies by state and product.</p>
+    </footer>`;
+  document.getElementById('h-getBtn').disabled = false;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+hRenderSymptoms();
+</script>
+</body>
+</html>

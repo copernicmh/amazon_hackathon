@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CommunityBridge</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-d:#0F6E56;--green-l:#E1F5EE;--green-m:#9FE1CB;
+  --amber:#BA7517;--amber-l:#FAEEDA;--amber-m:#FAC775;
+  --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#B5D4F4;
+  --coral:#993C1D;--coral-l:#FAECE7;--coral-m:#F5C4B3;
+  --purple:#534AB7;--purple-l:#EEEDFE;--purple-m:#CECBF6;
+  --ink:#1a1a18;--ink-m:#444441;--ink-l:#888780;
+  --paper:#fafaf7;--paper-m:#f1efea;--paper-d:#e8e6e0;
+  --white:#ffffff;
+  --border:rgba(0,0,0,0.1);
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.6;overflow-x:hidden}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--green-d);letter-spacing:-0.5px}
+.nav-logo span{color:var(--ink-l);font-weight:400;font-size:13px;margin-left:8px;font-family:'DM Sans',sans-serif}
+.nav-links{display:flex;gap:4px}
+.nav-link{padding:6px 14px;border-radius:6px;font-size:13px;color:var(--ink-m);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;transition:all .15s}
+.nav-link:hover,.nav-link.active{background:var(--green-l);color:var(--green-d)}
+.nav-cta{padding:8px 18px;background:var(--green);color:white;border:none;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.nav-cta:hover{opacity:.88}
+
+/* HERO */
+.hero {
+  padding: 80px 32px 60px;
+  max-width: 100%;        /* was 1100px */
+  margin: 0 auto;
+  display: flex;          /* was grid */
+  flex-direction: column; /* stack vertically */
+  align-items: center;    /* center everything */
+  text-align: center;     /* center the text */
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center; /* center the buttons too */
+}
+.hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:16px}
+.hero-title{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:20px}
+.hero-title em{color:var(--green);font-style:normal}
+.hero-body{font-size:26px;color:var(--ink-m);line-height:1.7;margin-bottom:28px;font-weight:300}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{padding:12px 24px;background:var(--green);color:white;border:none;bord£er-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-primary:hover{background:var(--green-d)}
+.btn-outline{padding:12px 24px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--ink-m);cursor:pointer;background:none;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-outline:hover{border-color:var(--green);color:var(--green-d)}
+.hero-stats{display:grid;grid-template-columns:repeat(1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.hero-stat{background:var(--white);padding:20px;text-align:center}
+.hs-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--ink);line-height:1}
+.hs-label{font-size:11px;color:var(--ink-l);margin-top:4px;font-weight:400}
+
+.hero-visual{background:var(--white);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,0.07);
+  width: 100%;
+}
+
+.hv-header{background:var(--green);
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  gap:10px}
+
+.hv-dots{display:flex;
+  gap:5px
+}
+
+.hv-dot{
+  width:9px;height:9px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.3)}
+
+.hv-title{font-size:16px;
+  color:rgba(255,255,255,0.9);
+  font-weight:500
+}
+
+.hv-body{padding:6px}
+
+#map {
+  background:var(--paper-m);
+  border-radius:8px;
+  height:400px;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:12px;
+  z-index:1;
+  width: 100%;
+}
+.ai-chip{background:var(--green-l);border:1px solid var(--green-m);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-d)}
+.ai-chip strong{font-weight:500}
+.chip-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.ctag{background:var(--green);color:white;font-size:10px;padding:3px 8px;border-radius:10px;font-weight:500}
+
+/* SECTION STRUCTURE */
+.section{padding:64px 32px;margin:0 auto}
+.section-eyebrow{font-size:11px;font-weight:500;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:12px}
+.section-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;line-height:1.15;letter-spacing:-0.8px;margin-bottom:12px}
+.section-body{font-size:15px;color:var(--ink-m);line-height:1.7;max-width:560px;font-weight:300}
+.divider{height:1px;background:var(--border);max-width:1100px;margin:0 auto}
+
+/* CAPABILITIES GRID */
+.caps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.cap-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .2s;cursor:pointer}
+.cap-card:hover{border-color:var(--green-m);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.cap-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px}
+.ic-green{background:var(--green-l)}
+.ic-blue{background:var(--blue-l)}
+.ic-amber{background:var(--amber-l)}
+.ic-purple{background:var(--purple-l)}
+.ic-coral{background:var(--coral-l)}
+.cap-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:6px}
+.cap-desc{font-size:13px;color:var(--ink-l);line-height:1.6}
+
+/* SCREENER */
+
+.sw-header{background:var(--ink);padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+.sw-title{font-size:15px;font-weight:500;color:white}
+.sw-sub{font-size:12px;color:rgba(255,255,255,0.5)}
+.sw-badge{background:var(--green);color:white;font-size:12px;padding:4px 10px;border-radius:10px;font-weight:500}
+.screener-left{}
+.q-label{font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.q-row{margin-bottom:20px}
+.q-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:10px}
+.options{display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:var(--paper)}
+.opt:hover{border-color:var(--green-m);background:var(--green-l)}
+.opt.sel{border-color:var(--green);background:var(--green-l)}
+.opt-dot{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.opt.sel .opt-dot{background:var(--green);border-color:var(--green)}
+.opt-inner{width:7px;height:7px;border-radius:50%;background:white;display:none}
+.opt.sel .opt-inner{display:block}
+.opt-text{font-size:13px;color:var(--ink)}
+.hh-control{display:flex;align-items:center;gap:14px;margin-top:8px}
+.hh-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--paper);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
+.hh-btn:hover{border-color:var(--green);background:var(--green-l)}
+.hh-num{font-size:22px;font-weight:500;min-width:24px;text-align:center}
+.income-field{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);outline:none;margin-top:4px}
+.income-field:focus{border-color:var(--green)}
+.run-btn{width:100%;padding:12px;background:var(--green);color:white;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px;transition:opacity .15s}
+.run-btn:hover{opacity:.88}
+.results-panel{background:var(--paper-m);border-radius:10px;padding:20px}
+.rp-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:12px}
+.result-item{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;transition:border-color .15s}
+.result-item.qualify{border-color:var(--green-m)}
+.ri-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.ri-name{font-size:13px;font-weight:500;color:var(--ink)}
+.ri-badge{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:500}
+.rb-q{background:var(--green-l);color:var(--green-d)}
+.rb-r{background:var(--amber-l);color:var(--amber)}
+.ri-desc{font-size:11px;color:var(--ink-l)}
+.ri-benefit{font-size:11px;color:var(--green-d);font-weight:500;margin-top:3px}
+.placeholder-results{text-align:center;padding:40px 20px;color:var(--ink-l)}
+.pr-icon{font-size:32px;margin-bottom:10px}
+.pr-text{font-size:13px}
+
+/* POP-UP MARKETS */
+.markets-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px;align-items:start}
+.market-list{}
+.market-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;display:flex;gap:16px;align-items:flex-start;transition:all .15s;cursor:pointer}
+.market-card:hover{border-color:var(--green-m);box-shadow:0 4px 16px rgba(0,0,0,.05)}
+.market-card.upcoming{border-color:var(--green)}
+.mc-date{background:var(--green-l);border-radius:8px;padding:8px 10px;text-align:center;flex-shrink:0;min-width:44px}
+.mc-month{font-size:9px;color:var(--green-d);font-weight:500;text-transform:uppercase}
+.mc-day{font-size:20px;color:var(--green-d);font-weight:700;line-height:1}
+.mc-info{}
+.mc-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.mc-loc{font-size:12px;color:var(--ink-l)}
+.mc-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.mc-tag{font-size:10px;padding:2px 7px;border-radius:6px;font-weight:500}
+.t-food{background:var(--green-l);color:var(--green-d)}
+.t-snap{background:var(--blue-l);color:var(--blue)}
+.t-health{background:var(--coral-l);color:var(--coral)}
+.t-cook{background:var(--amber-l);color:var(--amber)}
+.notify-box{background:var(--ink);border-radius:12px;padding:24px;color:white;position:sticky;top:80px}
+.nb-title{font-size:16px;font-weight:500;margin-bottom:6px}
+.nb-sub{font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:18px;line-height:1.5}
+.nb-input{width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:rgba(255,255,255,0.08);color:white;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px}
+.nb-input::placeholder{color:rgba(255,255,255,0.35)}
+.nb-input:focus{border-color:var(--green-m)}
+.nb-select{width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:rgba(255,255,255,0.08);color:white;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px;appearance:none}
+.nb-select option{background:var(--ink);color:white}
+.nb-btn{width:100%;padding:11px;background:var(--green);color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.nb-btn:hover{opacity:.88}
+.nb-success{display:none;background:var(--green-l);border-radius:8px;padding:12px;text-align:center;color:var(--green-d);font-size:13px;font-weight:500;margin-top:8px}
+
+/* FOOD INSECURITY MAP STYLES */
+.fim-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+}
+.fim-header {
+  background: var(--ink);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.fim-title-block {}
+.fim-title { font-size: 15px; font-weight: 500; color: white; }
+.fim-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.fim-badge { background: var(--green); color: white; font-size: 11px; padding: 4px 10px; border-radius: 10px; font-weight: 500; }
+.fim-controls {
+  display: flex;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--paper-m);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.fim-ctrl-group { display: flex; flex-direction: column; gap: 4px; }
+.fim-ctrl-label { font-size: 10px; font-weight: 500; color: var(--ink-l); text-transform: uppercase; letter-spacing: .7px; }
+.fim-select {
+  padding: 7px 28px 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--white);
+  color: var(--ink);
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  min-width: 150px;
+}
+.fim-select:focus { border-color: var(--green); }
+.fim-apply-btn {
+  padding: 7px 16px;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  align-self: flex-end;
+  transition: opacity .15s;
+}
+.fim-apply-btn:hover { opacity: .85; }
+.fim-body { display: flex; height: 520px; }
+#fim-map { flex: 1; z-index: 1; }
+.fim-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--white);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.fim-sb-section { padding: 16px; border-bottom: 1px solid var(--border); }
+.fim-sb-title { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 10px; }
+.legend-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.legend-swatch { width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; }
+.legend-label { font-size: 11px; color: var(--ink-m); }
+.fim-stat-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.fim-stat-name { font-size: 11px; color: var(--ink-l); }
+.fim-stat-val { font-size: 13px; font-weight: 500; color: var(--ink); }
+.fim-stat-val.high { color: #c0392b; }
+.fim-stat-val.med { color: var(--amber); }
+.fim-stat-val.low { color: var(--green-d); }
+.fim-footer {
+  padding: 10px 20px;
+  background: var(--paper-m);
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--ink-l);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.fim-footer a { color: var(--green-d); text-decoration: none; }
+.fim-footer a:hover { text-decoration: underline; }
+.fim-loading {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  background: rgba(255,255,255,.9); padding: 12px 20px; border-radius: 8px;
+  font-size: 13px; color: var(--ink-m); display: none; z-index: 999;
+  border: 1px solid var(--border);
+}
+.screener-wrap{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:40px;display:flex;flex-direction:column;}
+.sw-header{background:var(--ink);padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+.sw-title{font-size:15px;font-weight:500;color:white}
+.sw-sub{font-size:12px;color:rgba(255,255,255,0.5)}
+
+/* WORKFORCE */
+.workforce-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
+.wf-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.wf-stat{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.wf-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink)}
+.wf-label{font-size:11px;color:var(--ink-l);margin-top:2px}
+.chw-list{}
+.chw-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.chw-row:last-child{border-bottom:none}
+.chw-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+.av1{background:var(--purple-l);color:var(--purple)}
+.av2{background:var(--blue-l);color:var(--blue)}
+.av3{background:var(--coral-l);color:var(--coral)}
+.av4{background:var(--amber-l);color:var(--amber)}
+.av5{background:var(--green-l);color:var(--green-d)}
+.chw-info{flex:1}
+.chw-name{font-size:13px;font-weight:500;color:var(--ink)}
+.chw-spec{font-size:11px;color:var(--ink-l)}
+.chw-right{text-align:right}
+.chw-load{font-size:12px;color:var(--ink-m);margin-bottom:4px}
+.bar-bg{height:4px;width:80px;background:var(--paper-d);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;background:var(--green);transition:width .4s}
+.bar-fill.high{background:var(--amber)}
+.bar-fill.full{background:#E24B4A}
+.training-panel{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px}
+.tp-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:16px}
+.tp-module{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.tp-module:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.tm-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.tm-info{flex:1}
+.tm-name{font-size:12px;font-weight:500;color:var(--ink)}
+.tm-stat{font-size:11px;color:var(--ink-l)}
+.tm-pct{font-size:12px;font-weight:500}
+.pct-green{color:var(--green-d)}
+.pct-amber{color:var(--amber)}
+
+/* IMPACT */
+.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px}
+.impact-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center}
+.impact-num{font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:var(--green-d);line-height:1}
+.impact-label{font-size:12px;color:var(--ink-l);margin-top:6px;line-height:1.4}
+
+/* FOOTER */
+footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:40px 32px;margin-top:80px}
+.footer-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:gap}
+.footer-logo{font-family:'Playfair Display',serif;font-size:18px;color:white;margin-bottom:4px}
+.footer-sub{font-size:12px}
+.footer-partners{font-size:12px;text-align:right}
+.footer-partners strong{color:rgba(255,255,255,0.85)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero-eyebrow{animation:fadeUp .5s ease both}
+.hero-title{animation:fadeUp .5s .1s ease both}
+.hero-body{animation:fadeUp .5s .2s ease both}
+.hero-actions{animation:fadeUp .5s .3s ease both}
+.hero-visual{animation:fadeUp .6s .2s ease both}
+
+@media(max-width:768px){
+  .hero,.caps-grid,.markets-grid,.workforce-grid,.impact-grid{grid-template-columns:1fr}
+  .hero-title{font-size:36px}
+  .sw-body{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- nav section -->
+
+<nav>
+  <div class="nav-logo">CommunityBridge <span>Hampton Roads, VA</span></div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="scrollTo('home')">Home</button>
+    <button class="nav-link" onclick="scrollTo('food-insecurity')">Food Insecurity</button>
+    <button class="nav-link" onclick="scrollTo('markets')">Pop-Up Markets</button>
+    <button class="nav-link" onclick="scrollTo('workforce')">Workforce</button>
+    <button class="nav-link" onclick="scrollTo('impact')">Impact</button>
+    <button class="nav-link" onclick="scrollTo('partner')">Partner</button>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('food-insecurity').scrollIntoView({behavior:'smooth'})">View Food Map</button>
+</nav>
+
+<section id="home">
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Hampton University Partnership · Food as Medicine</div>
+    <h1 class="hero-title">Food is <em>medicine.</em> Technology is the bridge.</h1>
+    <p class="hero-body">CommunityBridge connects Hampton Roads residents to food, housing, and health resources through AI-powered screening, real-time resource maps, and accessible food banks that bring help directly to communities that need it most.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.getElementById('screener').scrollIntoView({behavior:'smooth'})">Check my eligibility</button>
+      <button class="btn-outline" onclick="document.getElementById('markets').scrollIntoView({behavior:'smooth'})">Find a market near me</button>
+    </div>
+  </div>
+</section>
+<div style="padding: 0 32px; margin: 32px auto; max-width: 100%;">
+  <div class="hv-header" style="background:var(--green); padding:14px 18px; border-radius:10px 10px 0 0;">
+    <div class="hv-dots"><div class="hv-dot"></div><div class="hv-dot"></div><div class="hv-dot"></div></div>
+    <div class="hv-title">USDA Geospatial SNAP Retailer Locator</div>
+  </div>
+  <div id="map" style="height:400px; width:100%; border-radius: 0 0 10px 10px;"></div>
+</div>
+
+
+<div class="divider"></div>
+
+<!-- FOOD INSECURITY MAP (Feeding America Map the Meal Gap) -->
+<div class="fim-wrap" id="food-insecurity">
+  <div class="fim-header">
+    <div class="fim-title-block">
+      <div class="fim-title">Food Insecurity Map — Hampton Roads & Virginia</div>
+      <div class="fim-sub">Data: Feeding America · Map the Meal Gap · Annual estimates by county</div>
+    </div>
+    <div class="fim-badge">Powered by Map the Meal Gap</div>
+  </div>
+
+  <!-- FILTER CONTROLS -->
+  <div class="fim-controls">
+    <div class="fim-ctrl-group">
+      <div class="fim-ctrl-label">Year</div>
+      <select class="fim-select" id="fim-year">
+        <option value="2022" selected>2022 (Latest)</option>
+        <option value="2021">2021</option>
+        <option value="2020">2020</option>
+        <option value="2019">2019</option>
+        <option value="2018">2018</option>
+      </select>
+    </div>
+    <div class="fim-ctrl-group">
+      <div class="fim-ctrl-label">Demographic</div>
+      <select class="fim-select" id="fim-demographic">
+        <option value="overall">Overall Population</option>
+        <option value="child">Child Food Insecurity</option>
+        <option value="senior">Senior Food Insecurity (60+)</option>
+        <option value="black">Black / African American</option>
+        <option value="hispanic">Hispanic / Latino</option>
+        <option value="white">White Non-Hispanic</option>
+      </select>
+    </div>
+    <div class="fim-ctrl-group">
+      <div class="fim-ctrl-label">Map Type</div>
+      <select class="fim-select" id="fim-maptype">
+        <option value="insecurity_rate">Food Insecurity Rate (%)</option>
+        <option value="insecurity_count">Food Insecure Individuals</option>
+        <option value="meal_gap">Meal Gap</option>
+        <option value="cost_per_meal">Cost Per Meal ($)</option>
+        <option value="snap_gap">SNAP Gap</option>
+      </select>
+    </div>
+    <div class="fim-ctrl-group">
+      <div class="fim-ctrl-label">Geography</div>
+      <select class="fim-select" id="fim-geo">
+        <option value="county">County Level</option>
+        <option value="cd">Congressional District</option>
+        <option value="state">State Level</option>
+      </select>
+    </div>
+    <button class="fim-apply-btn" onclick="applyFimFilters()">Update Map →</button>
+  </div>
+
+  <!-- MAP + SIDEBAR -->
+  <div class="fim-body" style="position:relative;">
+    <div id="fim-loading" class="fim-loading">Loading data…</div>
+    <div id="fim-map"></div>
+    <div class="fim-sidebar">
+      <div class="fim-sb-section">
+        <div class="fim-sb-title">Legend</div>
+        <div id="fim-legend">
+          <div class="legend-row"><div class="legend-swatch" style="background:#fef0d9"></div><div class="legend-label">&lt; 8% (Low)</div></div>
+          <div class="legend-row"><div class="legend-swatch" style="background:#fdcc8a"></div><div class="legend-label">8–12% (Moderate)</div></div>
+          <div class="legend-row"><div class="legend-swatch" style="background:#fc8d59"></div><div class="legend-label">12–16% (Elevated)</div></div>
+          <div class="legend-row"><div class="legend-swatch" style="background:#e34a33"></div><div class="legend-label">16–20% (High)</div></div>
+          <div class="legend-row"><div class="legend-swatch" style="background:#b30000"></div><div class="legend-label">&gt; 20% (Critical)</div></div>
+        </div>
+      </div>
+      <div class="fim-sb-section">
+        <div class="fim-sb-title">Hampton Roads Highlights</div>
+        <div class="fim-stat-row"><span class="fim-stat-name">Hampton City</span><span class="fim-stat-val high" id="stat-hampton">15.2%</span></div>
+        <div class="fim-stat-row"><span class="fim-stat-name">Newport News</span><span class="fim-stat-val high" id="stat-nn">16.8%</span></div>
+        <div class="fim-stat-row"><span class="fim-stat-name">Norfolk</span><span class="fim-stat-val high" id="stat-norfolk">17.1%</span></div>
+        <div class="fim-stat-row"><span class="fim-stat-name">Portsmouth</span><span class="fim-stat-val high" id="stat-portsmouth">18.4%</span></div>
+        <div class="fim-stat-row"><span class="fim-stat-name">Suffolk</span><span class="fim-stat-val med" id="stat-suffolk">13.6%</span></div>
+        <div class="fim-stat-row"><span class="fim-stat-name">Virginia Beach</span><span class="fim-stat-val med" id="stat-vb">11.3%</span></div>
+        <div class="fim-stat-row"><span class="fim-stat-name">Chesapeake</span><span class="fim-stat-val med" id="stat-ches">10.9%</span></div>
+      </div>
+      <div class="fim-sb-section">
+        <div class="fim-sb-title">Virginia Statewide</div>
+        <div class="fim-stat-row"><span class="fim-stat-name">Insecurity Rate</span><span class="fim-stat-val med" id="stat-va-rate">10.5%</span></div>
+        <div class="fim-stat-row"><span class="fim-stat-name">Food Insecure</span><span class="fim-stat-val">878,450</span></div>
+        <div class="fim-stat-row"><span class="fim-stat-name">Avg. Cost/Meal</span><span class="fim-stat-val">$3.84</span></div>
+        <div class="fim-stat-row"><span class="fim-stat-name">SNAP Coverage</span><span class="fim-stat-val">61%</span></div>
+      </div>
+      <div class="fim-sb-section">
+        <div class="fim-sb-title">Click a county to explore</div>
+        <div id="fim-county-detail" style="font-size:12px;color:var(--ink-l);line-height:1.6;">Select any county on the map to view detailed food insecurity statistics, meal gap data, and local resources.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fim-footer">
+    <span>Source: <a href="https://map.feedingamerica.org/" target="_blank">Feeding America Map the Meal Gap</a></span>
+    <span>·</span>
+    <span>County boundaries: US Census Bureau TIGER/Line</span>
+    <span>·</span>
+    <span><a href="https://www.feedingamerica.org/research/map-the-meal-gap/how-we-got-the-numbers" target="_blank">Methodology</a></span>
+    <span style="margin-left:auto;color:var(--green-d);font-weight:500" id="fim-current-label">Showing: Food Insecurity Rate · Overall · 2022</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section" id="markets">
+  <div class="section-eyebrow">University-powered pop-up markets</div>
+  <h2 class="section-title">We bring the market to you</h2>
+  <p class="section-body">Hampton University students and volunteers deploy into food deserts across Hampton Roads — bringing fresh produce, SNAP enrollment, health screenings, and cooking classes directly to the community.</p>
+  <div class="markets-grid">
+    <div class="market-list">
+      <div class="market-card upcoming">
+        <div class="mc-date"><div class="mc-month">Apr</div><div class="mc-day">2</div></div>
+        <div class="mc-info">
+          <div class="mc-name">Phoebus Community Market</div>
+          <div class="mc-loc">Hope House Community Center · 8am – 1pm</div>
+          <div class="mc-tags"><span class="mc-tag t-food">Fresh produce</span><span class="mc-tag t-snap">SNAP enrollment</span><span class="mc-tag t-health">BP screening</span></div>
+        </div>
+      </div>
+      <div class="market-card">
+        <div class="mc-date"><div class="mc-month">Apr</div><div class="mc-day">5</div></div>
+        <div class="mc-info">
+          <div class="mc-name">Cooking for Health — Diabetes Edition</div>
+          <div class="mc-loc">Hampton Univ. Extension Center · 10am – 12pm</div>
+          <div class="mc-tags"><span class="mc-tag t-cook">Cooking class</span><span class="mc-tag t-health">Nutrition counseling</span></div>
+        </div>
+      </div>
+      <div class="market-card">
+        <div class="mc-date"><div class="mc-month">Apr</div><div class="mc-day">9</div></div>
+        <div class="mc-info">
+          <div class="mc-name">Free Health Screening Day</div>
+          <div class="mc-loc">Bethel AME Church · 9am – 3pm</div>
+          <div class="mc-tags"><span class="mc-tag t-health">Blood pressure</span><span class="mc-tag t-health">Glucose testing</span><span class="mc-tag t-snap">SNAP help</span></div>
+        </div>
+      </div>
+      <div class="market-card">
+        <div class="mc-date"><div class="mc-month">Apr</div><div class="mc-day">14</div></div>
+        <div class="mc-info">
+          <div class="mc-name">SNAP Application Workshop</div>
+          <div class="mc-loc">Salvation Army Hampton · 10am – 2pm</div>
+          <div class="mc-tags"><span class="mc-tag t-snap">SNAP enrollment</span><span class="mc-tag t-food">Produce giveaway</span></div>
+        </div>
+      </div>
+      <div class="market-card">
+        <div class="mc-date"><div class="mc-month">Apr</div><div class="mc-day">19</div></div>
+        <div class="mc-info">
+          <div class="mc-name">Buckroe Beach Neighborhood Market</div>
+          <div class="mc-loc">Buckroe Community Center · 9am – 1pm</div>
+          <div class="mc-tags"><span class="mc-tag t-food">Fresh produce</span><span class="mc-tag t-cook">Recipe demos</span><span class="mc-tag t-health">WIC referrals</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="notify-box">
+        <div class="nb-title">Get notified when a market is near you</div>
+        <div class="nb-sub">We'll send you a text 72 hours before any pop-up market in your neighborhood. No app needed.</div>
+        <input class="nb-input" type="tel" id="notifyPhone" placeholder="Your phone number" />
+        <select class="nb-select" id="notifyZip">
+          <option value="">Select your ZIP code</option>
+          <option>23661 — Hampton (Phoebus)</option>
+          <option>23662 — Hampton (Buckroe)</option>
+          <option>23663 — Hampton (Wythe)</option>
+          <option>23664 — Hampton (Fox Hill)</option>
+          <option>23665 — Hampton (Langley)</option>
+          <option>23666 — Hampton (Newmarket)</option>
+          <option>23667 — Hampton (Downtown)</option>
+          <option>23668 — Hampton (Airport area)</option>
+          <option>23601 — Newport News (North)</option>
+          <option>23602 — Newport News (Denbigh)</option>
+          <option>23605 — Newport News (East End)</option>
+          <option>23606 — Newport News (Central)</option>
+          <option>23607 — Newport News (South)</option>
+        </select>
+        <button class="nb-btn" onclick="notifySignup()">Notify me by text →</button>
+        <div class="nb-success" id="notifySuccess">✓ You're signed up! We'll text you before markets in your area.</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:12px;line-height:1.5">Standard message rates may apply. Text STOP to unsubscribe anytime. Your information is never shared or sold.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section" id="workforce">
+  <div class="section-eyebrow">CHW workforce dashboard</div>
+  <h2 class="section-title">The people behind the platform</h2>
+  <p class="section-body">34 active community health workers across Hampton Roads. Real-time caseload tracking and training progress — so no one is overloaded and every resident gets the attention they deserve.</p>
+  <div class="workforce-grid">
+    <div>
+      <div class="wf-stats">
+        <div class="wf-stat"><div class="wf-num">34</div><div class="wf-label">Active CHWs</div></div>
+        <div class="wf-stat"><div class="wf-num">612</div><div class="wf-label">Screenings this month</div></div>
+        <div class="wf-stat"><div class="wf-num">83%</div><div class="wf-label">Referral success</div></div>
+        <div class="wf-stat"><div class="wf-num">4.8</div><div class="wf-label">Avg. satisfaction score</div></div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px">
+        <div style="font-size:14px;font-weight:500;margin-bottom:14px">CHW caseload — live</div>
+        <div class="chw-list">
+          <div class="chw-row">
+            <div class="chw-av av1">TJ</div>
+            <div class="chw-info"><div class="chw-name">Tamara Johnson</div><div class="chw-spec">Food · Housing · Certified</div></div>
+            <div class="chw-right"><div class="chw-load">18 / 25</div><div class="bar-bg"><div class="bar-fill" style="width:72%"></div></div></div>
+          </div>
+          <div class="chw-row">
+            <div class="chw-av av2">MR</div>
+            <div class="chw-info"><div class="chw-name">Marcus Reid</div><div class="chw-spec">Clinical Bridge · In training</div></div>
+            <div class="chw-right"><div class="chw-load">23 / 25</div><div class="bar-bg"><div class="bar-fill high" style="width:92%"></div></div></div>
+          </div>
+          <div class="chw-row">
+            <div class="chw-av av3">DN</div>
+            <div class="chw-info"><div class="chw-name">Diana Nguyen</div><div class="chw-spec">Diabetes · Nutrition · Certified</div></div>
+            <div class="chw-right"><div class="chw-load">12 / 25</div><div class="bar-bg"><div class="bar-fill" style="width:48%"></div></div></div>
+          </div>
+          <div class="chw-row">
+            <div class="chw-av av4">KW</div>
+            <div class="chw-info"><div class="chw-name">Kevin Williams</div><div class="chw-spec">Housing · Utilities · Certified</div></div>
+            <div class="chw-right"><div class="chw-load">15 / 25</div><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div></div>
+          </div>
+          <div class="chw-row">
+            <div class="chw-av av5">SA</div>
+            <div class="chw-info"><div class="chw-name">Sandra Alvarez</div><div class="chw-spec">WIC · Maternal Health · Certified</div></div>
+            <div class="chw-right"><div class="chw-load">20 / 25</div><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px;">
+      <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px">CHW Program Highlights</div>
+      <div style="background:var(--green-l);border-radius:10px;padding:16px 18px;">
+        <div style="font-size:12px;color:var(--green-d);font-weight:500;margin-bottom:4px">📍 Coverage Area</div>
+        <div style="font-size:13px;color:var(--ink-m);line-height:1.6">7 cities across Hampton Roads — Hampton, Newport News, Norfolk, Portsmouth, Suffolk, Virginia Beach, Chesapeake</div>
+      </div>
+      <div style="background:var(--blue-l);border-radius:10px;padding:16px 18px;">
+        <div style="font-size:12px;color:var(--blue);font-weight:500;margin-bottom:4px">🤝 University Partnership</div>
+        <div style="font-size:13px;color:var(--ink-m);line-height:1.6">Hampton University students serve as embedded researchers and field coordinators alongside certified CHWs.</div>
+      </div>
+      <div style="background:var(--amber-l);border-radius:10px;padding:16px 18px;">
+        <div style="font-size:12px;color:var(--amber);font-weight:500;margin-bottom:4px">📊 Data-Driven Dispatch</div>
+        <div style="font-size:13px;color:var(--ink-m);line-height:1.6">CHW assignments are driven by our food insecurity heatmap — highest-need zip codes get first coverage each week.</div>
+      </div>
+      <div style="background:var(--purple-l);border-radius:10px;padding:16px 18px;">
+        <div style="font-size:12px;color:var(--purple);font-weight:500;margin-bottom:4px">🏥 Clinical Bridge Protocol</div>
+        <div style="font-size:13px;color:var(--ink-m);line-height:1.6">Every CHW has a warm handoff pathway to Sentara, Riverside, and Bon Secours partner clinics for residents flagged with urgent health needs.</div>
+      </div>
+      <div style="margin-top:4px;text-align:center;">
+        <button class="btn-primary" onclick="document.getElementById('partner').scrollIntoView({behavior:'smooth'})" style="font-size:13px;width:100%">Partner with CommunityBridge →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section" id="impact">
+  <div class="section-eyebrow">Community impact</div>
+  <h2 class="section-title">Measurable change, not just intentions</h2>
+  <p class="section-body">Every screening, market visit, and CHW consultation generates data that improves how we target resources — and builds the case for sustained public investment.</p>
+  <div class="impact-grid">
+    <div class="impact-card">
+      <div class="impact-num">1,247</div>
+      <div class="impact-label">Families connected to resources this month</div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-num">$2.1M</div>
+      <div class="impact-label">In benefits unlocked for Hampton Roads residents</div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-num">18</div>
+      <div class="impact-label">Pop-up markets deployed in food deserts this quarter</div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-num">4.8★</div>
+      <div class="impact-label">Average resident satisfaction score (5-point scale)</div>
+    </div>
+  </div>
+  <div style="margin-top:32px;background:var(--ink);border-radius:14px;padding:40px;text-align:center;color:white">
+    <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:12px;line-height:1.2">A replicable model for national deployment</div>
+    <div style="font-size:15px;color:rgba(255,255,255,0.6);max-width:560px;margin:0 auto 24px;line-height:1.7;font-weight:300">CommunityBridge is built to scale. Every data standard, university partnership model, and CHW training module is designed to be adopted by cities and regions across the country.</div>
+    <button class="btn-primary" style="font-size:14px" onclick="document.getElementById('partner').scrollIntoView({behavior:'smooth'})">Partner with CommunityBridge →</button>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PARTNER CONTACT FORM -->
+<div class="section" id="partner" style="max-width:680px;margin:0 auto;">
+  <div style="text-align:center;">
+    <div class="section-eyebrow">Get involved</div>
+    <h2 class="section-title" style="text-align:center;">Partner with CommunityBridge</h2>
+    <p class="section-body" style="max-width:520px;margin:0 auto 36px;text-align:center;">Whether you're a hospital system, university, city agency, or community organization — we'd love to connect. Fill out the form below and our team will be in touch within 48 hours.</p>
+  </div>
+
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+    <div style="background:var(--green);padding:18px 28px;display:flex;align-items:center;gap:10px;">
+      <div style="font-size:15px;font-weight:500;color:white;">Partnership Inquiry</div>
+      <div style="margin-left:auto;background:rgba(255,255,255,0.2);color:white;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:500;">We respond within 48 hrs</div>
+    </div>
+
+    <div style="padding:32px 36px;display:flex;flex-direction:column;gap:18px;" id="partnerForm">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">First Name *</label>
+          <input class="income-field" type="text" id="pFirstName" placeholder="First name" />
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">Last Name *</label>
+          <input class="income-field" type="text" id="pLastName" placeholder="Last name" />
+        </div>
+      </div>
+
+      <div>
+        <label style="display:block;font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">Organization / Company *</label>
+        <input class="income-field" type="text" id="pOrg" placeholder="e.g. Sentara Healthcare, City of Norfolk, Hampton University" />
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">Your Title / Role</label>
+          <input class="income-field" type="text" id="pTitle" placeholder="e.g. Director of Community Health" />
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">Organization Type *</label>
+          <select class="income-field" id="pOrgType" style="cursor:pointer;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;">
+            <option value="">Select type…</option>
+            <option>Hospital / Health System</option>
+            <option>University / Academic Institution</option>
+            <option>City / County Government</option>
+            <option>State Agency</option>
+            <option>Nonprofit / Community Organization</option>
+            <option>Food Bank / Pantry Network</option>
+            <option>Federal Agency</option>
+            <option>Private / Corporate Funder</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">Email Address *</label>
+          <input class="income-field" type="email" id="pEmail" placeholder="you@organization.org" />
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">Phone Number</label>
+          <input class="income-field" type="tel" id="pPhone" placeholder="(757) 000-0000" />
+        </div>
+      </div>
+
+      <div>
+        <label style="display:block;font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">Area of Interest *</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="pInterests">
+          <label style="display:flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;cursor:pointer;transition:all .15s;" class="interest-chip"><input type="checkbox" value="data" style="accent-color:var(--green)"> Food Insecurity Data Sharing</label>
+          <label style="display:flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;cursor:pointer;transition:all .15s;" class="interest-chip"><input type="checkbox" value="chw" style="accent-color:var(--green)"> CHW Workforce Integration</label>
+          <label style="display:flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;cursor:pointer;transition:all .15s;" class="interest-chip"><input type="checkbox" value="markets" style="accent-color:var(--green)"> Pop-Up Market Hosting</label>
+          <label style="display:flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;cursor:pointer;transition:all .15s;" class="interest-chip"><input type="checkbox" value="snap" style="accent-color:var(--green)"> SNAP / Benefits Enrollment</label>
+          <label style="display:flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;cursor:pointer;transition:all .15s;" class="interest-chip"><input type="checkbox" value="research" style="accent-color:var(--green)"> Research & Evaluation</label>
+          <label style="display:flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;cursor:pointer;transition:all .15s;" class="interest-chip"><input type="checkbox" value="funding" style="accent-color:var(--green)"> Funding / Grant Partnership</label>
+          <label style="display:flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;cursor:pointer;transition:all .15s;" class="interest-chip"><input type="checkbox" value="replication" style="accent-color:var(--green)"> Replicating the Model</label>
+        </div>
+      </div>
+
+      <div>
+        <label style="display:block;font-size:11px;font-weight:500;color:var(--ink-l);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">Message / Additional Context</label>
+        <textarea class="income-field" id="pMessage" rows="4" placeholder="Tell us about your organization and what you're hoping to accomplish together…" style="resize:vertical;"></textarea>
+      </div>
+
+      <button class="run-btn" onclick="submitPartner()" style="margin-top:4px;">Submit Partnership Inquiry →</button>
+
+      <div id="partnerSuccess" style="display:none;background:var(--green-l);border:1px solid var(--green-m);border-radius:10px;padding:20px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:8px;">✅</div>
+        <div style="font-size:15px;font-weight:500;color:var(--green-d);margin-bottom:4px;">Inquiry received — thank you!</div>
+        <div style="font-size:13px;color:var(--ink-m);">A member of our partnerships team will reach out to you within 48 hours.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">CommunityBridge</div>
+      <div class="footer-sub">Hampton Roads, Virginia · Innovation for Food Security & Public Health</div>
+    </div>
+    <div class="footer-partners">
+      <strong>Developed in partnership with</strong><br>
+      Hampton University · Virginia DSS · Peninsula Food Bank<br>
+      Dominion Energy · Hampton Dept. of Human Services
+    </div>
+  </div>
+</footer>
+<script>
+  // ─── SNAP Retailer Map (hero) ────────────────────────────────────────────
+  window.addEventListener('load', function() {
+    const map = L.map('map').setView([37.0299, -76.3452], 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    const snapRetailers = L.esri.featureLayer({
+      url: 'https://services1.arcgis.com/RLQu0rK7h4kbsBq5/arcgis/rest/services/snap_retailer_location_data/FeatureServer/0',
+      where: "State = 'VA' AND (City = 'HAMPTON' OR City = 'NEWPORT NEWS')",
+      pointToLayer: function(geojson, latlng) {
+        return L.circleMarker(latlng, { radius: 6, fillColor: '#1D9E75', color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.8 });
+      }
+    }).addTo(map);
+
+    snapRetailers.bindPopup(function(layer) {
+      return `<strong>${layer.feature.properties.Store_Name}</strong><br>${layer.feature.properties.Store_Street_Address}`;
+    });
+  });
+
+  // ─── Food Insecurity Map ─────────────────────────────────────────────────
+
+  // Feeding America Map the Meal Gap data — Virginia counties (2022 estimates)
+  // Rates are food insecurity percentages. Keyed by FIPS code.
+  var FIM_DATA = {
+    overall: {
+      2022: {
+        // Hampton Roads Cities
+        '51650': { name: 'Hampton City', rate: 15.2, count: 22300, mealGap: 8200000, costMeal: 3.87, snapGap: 42 },
+        '51700': { name: 'Newport News City', rate: 16.8, count: 31600, mealGap: 11600000, costMeal: 3.82, snapGap: 38 },
+        '51710': { name: 'Norfolk City', rate: 17.1, count: 41500, mealGap: 15200000, costMeal: 3.79, snapGap: 35 },
+        '51740': { name: 'Portsmouth City', rate: 18.4, count: 17200, mealGap: 6300000, costMeal: 3.75, snapGap: 33 },
+        '51800': { name: 'Suffolk City', rate: 13.6, count: 12300, mealGap: 4500000, costMeal: 3.91, snapGap: 48 },
+        '51810': { name: 'Virginia Beach City', rate: 11.3, count: 52100, mealGap: 19100000, costMeal: 3.95, snapGap: 52 },
+        '51550': { name: 'Chesapeake City', rate: 10.9, count: 26800, mealGap: 9800000, costMeal: 3.93, snapGap: 54 },
+        '51735': { name: 'Poquoson City', rate: 6.2, count: 760, mealGap: 280000, costMeal: 4.02, snapGap: 66 },
+        '51830': { name: 'Williamsburg City', rate: 12.4, count: 1680, mealGap: 615000, costMeal: 3.88, snapGap: 46 },
+        '51199': { name: 'York County', rate: 7.8, count: 5300, mealGap: 1940000, costMeal: 3.99, snapGap: 60 },
+        '51093': { name: 'Isle of Wight County', rate: 10.4, count: 3700, mealGap: 1360000, costMeal: 3.88, snapGap: 50 },
+        '51095': { name: 'James City County', rate: 8.1, count: 5900, mealGap: 2160000, costMeal: 3.97, snapGap: 58 },
+        // Other VA counties
+        '51003': { name: 'Albemarle County', rate: 7.9, count: 8200, mealGap: 3000000, costMeal: 3.94, snapGap: 59 },
+        '51013': { name: 'Arlington County', rate: 6.8, count: 15200, mealGap: 5600000, costMeal: 4.38, snapGap: 62 },
+        '51059': { name: 'Fairfax County', rate: 5.2, count: 57600, mealGap: 21100000, costMeal: 4.41, snapGap: 64 },
+        '51107': { name: 'Loudoun County', rate: 4.8, count: 18500, mealGap: 6800000, costMeal: 4.48, snapGap: 67 },
+        '51041': { name: 'Chesterfield County', rate: 9.2, count: 31400, mealGap: 11500000, costMeal: 3.89, snapGap: 55 },
+        '51087': { name: 'Henrico County', rate: 10.1, count: 33200, mealGap: 12200000, costMeal: 3.86, snapGap: 53 },
+        '51760': { name: 'Richmond City', rate: 19.3, count: 40900, mealGap: 15000000, costMeal: 3.78, snapGap: 31 },
+        '51770': { name: 'Roanoke City', rate: 20.1, count: 19800, mealGap: 7300000, costMeal: 3.71, snapGap: 28 },
+        '51019': { name: 'Bedford County', rate: 11.8, count: 9400, mealGap: 3400000, costMeal: 3.82, snapGap: 47 },
+        '51143': { name: 'Pittsylvania County', rate: 17.6, count: 10900, mealGap: 4000000, costMeal: 3.67, snapGap: 34 },
+        '51117': { name: 'Mecklenburg County', rate: 19.8, count: 6200, mealGap: 2300000, costMeal: 3.64, snapGap: 30 },
+        '51840': { name: 'Winchester City', rate: 14.9, count: 4200, mealGap: 1540000, costMeal: 3.83, snapGap: 40 },
+        '51069': { name: 'Frederick County', rate: 8.9, count: 7800, mealGap: 2860000, costMeal: 3.90, snapGap: 56 },
+      },
+      2021: {
+        '51650': { name: 'Hampton City', rate: 16.1, count: 23500, mealGap: 8600000, costMeal: 3.74, snapGap: 40 },
+        '51700': { name: 'Newport News City', rate: 17.5, count: 32900, mealGap: 12100000, costMeal: 3.69, snapGap: 36 },
+        '51710': { name: 'Norfolk City', rate: 17.9, count: 43400, mealGap: 15900000, costMeal: 3.66, snapGap: 33 },
+        '51740': { name: 'Portsmouth City', rate: 19.2, count: 17900, mealGap: 6600000, costMeal: 3.62, snapGap: 31 },
+        '51800': { name: 'Suffolk City', rate: 14.3, count: 12900, mealGap: 4700000, costMeal: 3.78, snapGap: 46 },
+        '51810': { name: 'Virginia Beach City', rate: 11.9, count: 54800, mealGap: 20100000, costMeal: 3.82, snapGap: 50 },
+        '51550': { name: 'Chesapeake City', rate: 11.5, count: 28200, mealGap: 10300000, costMeal: 3.80, snapGap: 52 },
+        '51760': { name: 'Richmond City', rate: 20.1, count: 42600, mealGap: 15600000, costMeal: 3.65, snapGap: 29 },
+        '51770': { name: 'Roanoke City', rate: 21.0, count: 20700, mealGap: 7600000, costMeal: 3.58, snapGap: 26 },
+        '51059': { name: 'Fairfax County', rate: 5.6, count: 62000, mealGap: 22700000, costMeal: 4.28, snapGap: 62 },
+      },
+    },
+    child: {
+      2022: {
+        '51650': { name: 'Hampton City', rate: 22.4, count: 8900, mealGap: 3300000, costMeal: 3.87, snapGap: 38 },
+        '51700': { name: 'Newport News City', rate: 24.1, count: 14600, mealGap: 5400000, costMeal: 3.82, snapGap: 34 },
+        '51710': { name: 'Norfolk City', rate: 25.3, count: 19200, mealGap: 7000000, costMeal: 3.79, snapGap: 31 },
+        '51740': { name: 'Portsmouth City', rate: 27.6, count: 8100, mealGap: 2900000, costMeal: 3.75, snapGap: 29 },
+        '51800': { name: 'Suffolk City', rate: 20.1, count: 5600, mealGap: 2100000, costMeal: 3.91, snapGap: 44 },
+        '51810': { name: 'Virginia Beach City', rate: 16.8, count: 24100, mealGap: 8800000, costMeal: 3.95, snapGap: 48 },
+        '51550': { name: 'Chesapeake City', rate: 15.9, count: 12400, mealGap: 4500000, costMeal: 3.93, snapGap: 50 },
+        '51760': { name: 'Richmond City', rate: 29.4, count: 19200, mealGap: 7000000, costMeal: 3.78, snapGap: 27 },
+        '51059': { name: 'Fairfax County', rate: 7.8, count: 26600, mealGap: 9700000, costMeal: 4.41, snapGap: 60 },
+      }
+    },
+    senior: {
+      2022: {
+        '51650': { name: 'Hampton City', rate: 11.8, count: 4200, mealGap: 1500000, costMeal: 3.87, snapGap: 55 },
+        '51700': { name: 'Newport News City', rate: 13.1, count: 6800, mealGap: 2500000, costMeal: 3.82, snapGap: 52 },
+        '51710': { name: 'Norfolk City', rate: 13.9, count: 8900, mealGap: 3300000, costMeal: 3.79, snapGap: 48 },
+        '51740': { name: 'Portsmouth City', rate: 15.2, count: 4100, mealGap: 1500000, costMeal: 3.75, snapGap: 44 },
+        '51800': { name: 'Suffolk City', rate: 10.4, count: 2800, mealGap: 1000000, costMeal: 3.91, snapGap: 59 },
+        '51810': { name: 'Virginia Beach City', rate: 8.9, count: 11200, mealGap: 4100000, costMeal: 3.95, snapGap: 63 },
+        '51550': { name: 'Chesapeake City', rate: 8.4, count: 5900, mealGap: 2200000, costMeal: 3.93, snapGap: 65 },
+        '51760': { name: 'Richmond City', rate: 16.1, count: 8900, mealGap: 3300000, costMeal: 3.78, snapGap: 40 },
+        '51059': { name: 'Fairfax County', rate: 4.2, count: 13100, mealGap: 4800000, costMeal: 4.41, snapGap: 69 },
+      }
+    }
+  };
+
+  // Color scale for rates
+  function getRateColor(rate) {
+    if (rate === null || rate === undefined) return '#cccccc';
+    if (rate < 8)  return '#fef0d9';
+    if (rate < 12) return '#fdcc8a';
+    if (rate < 16) return '#fc8d59';
+    if (rate < 20) return '#e34a33';
+    return '#b30000';
+  }
+
+  function getCountColor(count) {
+    if (!count) return '#cccccc';
+    if (count < 5000)  return '#fef0d9';
+    if (count < 15000) return '#fdcc8a';
+    if (count < 30000) return '#fc8d59';
+    if (count < 50000) return '#e34a33';
+    return '#b30000';
+  }
+
+  var fimMap, fimGeoLayer;
+
+  function initFimMap() {
+    fimMap = L.map('fim-map').setView([37.45, -78.6], 7);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap contributors © CARTO'
+    }).addTo(fimMap);
+    loadFimGeoJSON();
+  }
+
+  function loadFimGeoJSON() {
+    var loading = document.getElementById('fim-loading');
+    loading.style.display = 'block';
+    // Fetch VA county boundaries from Census TIGER GeoJSON
+    fetch('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json')
+      .then(function(r) { return r.json(); })
+      .then(function(geo) {
+        // Filter Virginia counties only (FIPS starts with 51)
+        var vaGeo = {
+          type: 'FeatureCollection',
+          features: geo.features.filter(function(f) {
+            return f.id && String(f.id).padStart(5,'0').startsWith('51');
+          })
+        };
+        loading.style.display = 'none';
+        renderFimLayer(vaGeo);
+      })
+      .catch(function() {
+        loading.style.display = 'none';
+        renderFimFallback();
+      });
+  }
+
+  function getCurrentData() {
+    var demo = document.getElementById('fim-demographic').value;
+    var year = document.getElementById('fim-year').value;
+    var maptype = document.getElementById('fim-maptype').value;
+    // Fallback chain
+    var src = (FIM_DATA[demo] && FIM_DATA[demo][year]) ||
+              (FIM_DATA[demo] && FIM_DATA[demo]['2022']) ||
+              FIM_DATA.overall['2022'];
+    return { src: src, maptype: maptype };
+  }
+
+  function getFeatureValue(fips, src, maptype) {
+    var d = src[fips];
+    if (!d) return null;
+    switch(maptype) {
+      case 'insecurity_rate':  return d.rate;
+      case 'insecurity_count': return d.count;
+      case 'meal_gap':         return d.mealGap;
+      case 'cost_per_meal':    return d.costMeal;
+      case 'snap_gap':         return d.snapGap;
+      default: return d.rate;
+    }
+  }
+
+  function getFeatureColor(val, maptype) {
+    if (val === null) return '#e8e6e0';
+    if (maptype === 'insecurity_count' || maptype === 'meal_gap') return getCountColor(val);
+    if (maptype === 'cost_per_meal') {
+      if (val < 3.5) return '#fef0d9';
+      if (val < 3.8) return '#fdcc8a';
+      if (val < 4.0) return '#fc8d59';
+      if (val < 4.3) return '#e34a33';
+      return '#b30000';
+    }
+    if (maptype === 'snap_gap') {
+      // lower coverage = worse
+      var inv = 100 - val;
+      return getRateColor(inv * 0.2);
+    }
+    return getRateColor(val);
+  }
+
+  function formatVal(val, maptype) {
+    if (val === null) return 'No data';
+    switch(maptype) {
+      case 'insecurity_rate': return val.toFixed(1) + '%';
+      case 'insecurity_count': return val.toLocaleString();
+      case 'meal_gap': return '$' + (val/1000000).toFixed(1) + 'M';
+      case 'cost_per_meal': return '$' + val.toFixed(2);
+      case 'snap_gap': return val + '% covered';
+      default: return val;
+    }
+  }
+
+  function renderFimLayer(geoJson) {
+    if (fimGeoLayer) { fimMap.removeLayer(fimGeoLayer); }
+    var cd = getCurrentData();
+
+    fimGeoLayer = L.geoJSON(geoJson, {
+      style: function(feature) {
+        var fips = String(feature.id).padStart(5,'0');
+        var val = getFeatureValue(fips, cd.src, cd.maptype);
+        return {
+          fillColor: getFeatureColor(val, cd.maptype),
+          weight: 1,
+          opacity: 1,
+          color: 'rgba(255,255,255,0.6)',
+          fillOpacity: val !== null ? 0.82 : 0.3
+        };
+      },
+      onEachFeature: function(feature, layer) {
+        var fips = String(feature.id).padStart(5,'0');
+        var d = cd.src[fips];
+        var name = d ? d.name : (feature.properties.NAME + ' County');
+        var val = getFeatureValue(fips, cd.src, cd.maptype);
+        var maptype = cd.maptype;
+
+        layer.on('mouseover', function(e) {
+          layer.setStyle({ weight: 2, color: '#1D9E75', fillOpacity: 0.95 });
+          L.popup({ closeButton: false, offset: [0, -4] })
+            .setLatLng(e.latlng)
+            .setContent(
+              '<div style="font-family:DM Sans,sans-serif;min-width:160px">' +
+              '<div style="font-weight:600;font-size:13px;margin-bottom:4px">' + name + '</div>' +
+              (d ? [
+                '<div style="font-size:11px;color:#444;margin-bottom:2px">Food Insecurity: <strong>' + d.rate + '%</strong></div>',
+                '<div style="font-size:11px;color:#444;margin-bottom:2px">Individuals: <strong>' + d.count.toLocaleString() + '</strong></div>',
+                '<div style="font-size:11px;color:#444;margin-bottom:2px">Cost/Meal: <strong>$' + d.costMeal.toFixed(2) + '</strong></div>',
+                '<div style="font-size:11px;color:#444">SNAP Coverage: <strong>' + d.snapGap + '%</strong></div>',
+              ].join('') : '<div style="font-size:11px;color:#888">No data available</div>') +
+              '</div>'
+            ).openOn(fimMap);
+        });
+
+        layer.on('mouseout', function() {
+          fimGeoLayer.resetStyle(layer);
+          fimMap.closePopup();
+        });
+
+        layer.on('click', function() {
+          var detail = document.getElementById('fim-county-detail');
+          if (d) {
+            detail.innerHTML =
+              '<strong style="font-size:13px;color:#1a1a18">' + name + '</strong><br>' +
+              '<table style="width:100%;margin-top:8px;border-collapse:collapse">' +
+              tr('Food Insecurity Rate', d.rate.toFixed(1) + '%', d.rate > 15 ? '#c0392b' : d.rate > 10 ? '#BA7517' : '#0F6E56') +
+              tr('Food Insecure People', d.count.toLocaleString(), '') +
+              tr('Annual Meal Gap', '$' + (d.mealGap/1000000).toFixed(1) + 'M', '') +
+              tr('Cost Per Meal', '$' + d.costMeal.toFixed(2), '') +
+              tr('SNAP Coverage', d.snapGap + '% of need', d.snapGap < 40 ? '#c0392b' : d.snapGap < 55 ? '#BA7517' : '#0F6E56') +
+              '</table>';
+          } else {
+            detail.innerHTML = '<span style="color:#888">No detailed data for this county.</span>';
+          }
+        });
+      }
+    }).addTo(fimMap);
+  }
+
+  function tr(label, val, color) {
+    return '<tr><td style="font-size:11px;color:#888;padding:2px 0">' + label + '</td>' +
+           '<td style="font-size:12px;font-weight:500;text-align:right;color:' + (color||'#1a1a18') + '">' + val + '</td></tr>';
+  }
+
+  function renderFimFallback() {
+    // If GeoJSON fails to load, show circles for known locations
+    var cd = getCurrentData();
+    Object.entries(cd.src).forEach(function([fips, d]) {
+      var coords = FIPS_COORDS[fips];
+      if (!coords) return;
+      var color = getFeatureColor(getFeatureValue(fips, cd.src, cd.maptype), cd.maptype);
+      L.circleMarker(coords, {
+        radius: 18, fillColor: color, color: '#fff', weight: 1.5, fillOpacity: 0.85
+      }).bindTooltip('<strong>' + d.name + '</strong><br>' + d.rate + '% food insecure').addTo(fimMap);
+    });
+  }
+
+  var FIPS_COORDS = {
+    '51650': [37.0299,-76.3452], '51700': [37.0871,-76.4730],
+    '51710': [36.8508,-76.2859], '51740': [36.8354,-76.2983],
+    '51800': [36.7282,-76.5836], '51810': [36.8529,-75.9779],
+    '51550': [36.7682,-76.2875], '51735': [37.1235,-76.3460],
+    '51830': [37.2707,-76.7075], '51199': [37.2290,-76.5097],
+    '51760': [37.5407,-77.4360], '51770': [37.2710,-79.9414],
+    '51059': [38.8462,-77.3064],
+  };
+
+  function updateLegend() {
+    var maptype = document.getElementById('fim-maptype').value;
+    var legend = document.getElementById('fim-legend');
+    if (maptype === 'insecurity_rate' || maptype === 'snap_gap') {
+      legend.innerHTML = [
+        ['#fef0d9', '< 8% (Low)'],
+        ['#fdcc8a', '8–12% (Moderate)'],
+        ['#fc8d59', '12–16% (Elevated)'],
+        ['#e34a33', '16–20% (High)'],
+        ['#b30000', '> 20% (Critical)']
+      ].map(function(r){ return '<div class="legend-row"><div class="legend-swatch" style="background:'+r[0]+'"></div><div class="legend-label">'+r[1]+'</div></div>'; }).join('');
+    } else if (maptype === 'insecurity_count') {
+      legend.innerHTML = [
+        ['#fef0d9', '< 5,000 people'],
+        ['#fdcc8a', '5,000–15,000'],
+        ['#fc8d59', '15,000–30,000'],
+        ['#e34a33', '30,000–50,000'],
+        ['#b30000', '> 50,000 people']
+      ].map(function(r){ return '<div class="legend-row"><div class="legend-swatch" style="background:'+r[0]+'"></div><div class="legend-label">'+r[1]+'</div></div>'; }).join('');
+    } else if (maptype === 'cost_per_meal') {
+      legend.innerHTML = [
+        ['#fef0d9', '< $3.50'],
+        ['#fdcc8a', '$3.50–$3.80'],
+        ['#fc8d59', '$3.80–$4.00'],
+        ['#e34a33', '$4.00–$4.30'],
+        ['#b30000', '> $4.30']
+      ].map(function(r){ return '<div class="legend-row"><div class="legend-swatch" style="background:'+r[0]+'"></div><div class="legend-label">'+r[1]+'</div></div>'; }).join('');
+    } else {
+      legend.innerHTML = [
+        ['#fef0d9', 'Low severity'],
+        ['#fdcc8a', 'Moderate'],
+        ['#fc8d59', 'Elevated'],
+        ['#e34a33', 'High'],
+        ['#b30000', 'Critical']
+      ].map(function(r){ return '<div class="legend-row"><div class="legend-swatch" style="background:'+r[0]+'"></div><div class="legend-label">'+r[1]+'</div></div>'; }).join('');
+    }
+  }
+
+  function updateSidebarStats() {
+    var demo = document.getElementById('fim-demographic').value;
+    var year = document.getElementById('fim-year').value;
+    var src = (FIM_DATA[demo] && FIM_DATA[demo][year]) ||
+              (FIM_DATA[demo] && FIM_DATA[demo]['2022']) ||
+              FIM_DATA.overall['2022'];
+
+    function setstat(id, fips) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var d = src[fips];
+      if (!d) { el.textContent = 'N/A'; el.className = 'fim-stat-val'; return; }
+      el.textContent = d.rate.toFixed(1) + '%';
+      el.className = 'fim-stat-val ' + (d.rate > 16 ? 'high' : d.rate > 11 ? 'med' : 'low');
+    }
+    setstat('stat-hampton','51650');
+    setstat('stat-nn','51700');
+    setstat('stat-norfolk','51710');
+    setstat('stat-portsmouth','51740');
+    setstat('stat-suffolk','51800');
+    setstat('stat-vb','51810');
+    setstat('stat-ches','51550');
+  }
+
+  function updateCurrentLabel() {
+    var demoEl = document.getElementById('fim-demographic');
+    var yearEl = document.getElementById('fim-year');
+    var typeEl = document.getElementById('fim-maptype');
+    var label = document.getElementById('fim-current-label');
+    label.textContent = 'Showing: ' +
+      typeEl.options[typeEl.selectedIndex].text + ' · ' +
+      demoEl.options[demoEl.selectedIndex].text + ' · ' +
+      yearEl.value;
+  }
+
+  function applyFimFilters() {
+    if (fimGeoLayer) {
+      fimGeoLayer.setStyle(function(feature) {
+        var fips = String(feature.id).padStart(5,'0');
+        var cd = getCurrentData();
+        var val = getFeatureValue(fips, cd.src, cd.maptype);
+        return {
+          fillColor: getFeatureColor(val, cd.maptype),
+          weight: 1, opacity: 1, color: 'rgba(255,255,255,0.6)',
+          fillOpacity: val !== null ? 0.82 : 0.3
+        };
+      });
+    }
+    updateLegend();
+    updateSidebarStats();
+    updateCurrentLabel();
+  }
+
+  // Init food insecurity map after page load
+  window.addEventListener('load', function() {
+    setTimeout(initFimMap, 100);
+  });
+
+  // ─── Utility Functions ───────────────────────────────────────────────────
+  function notifySignup() {
+    var ph = document.getElementById('notifyPhone').value;
+    var zip = document.getElementById('notifyZip').value;
+    if (!ph || !zip) { alert('Please enter your phone number and select your ZIP code.'); return; }
+    document.getElementById('notifySuccess').style.display = 'block';
+    document.getElementById('notifyPhone').value = '';
+    document.getElementById('notifyZip').value = '';
+  }
+
+  function submitPartner() {
+    var firstName = document.getElementById('pFirstName').value.trim();
+    var lastName  = document.getElementById('pLastName').value.trim();
+    var org       = document.getElementById('pOrg').value.trim();
+    var orgType   = document.getElementById('pOrgType').value;
+    var email     = document.getElementById('pEmail').value.trim();
+    var interests = Array.from(document.querySelectorAll('#pInterests input:checked')).map(function(c){return c.value;});
+    if (!firstName || !lastName || !org || !orgType || !email) {
+      alert('Please fill in all required fields (marked with *) before submitting.'); return;
+    }
+    if (!email.includes('@')) { alert('Please enter a valid email address.'); return; }
+    // Hide form fields and show success
+    document.getElementById('partnerForm').querySelectorAll('input,select,textarea,button:not(#partnerSuccess *)').forEach(function(el){ el.style.display='none'; });
+    document.getElementById('partnerSuccess').style.display = 'block';
+  }
+
+  function scrollTo(id) {
+    var el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    document.querySelectorAll('.nav-link').forEach(function(l) { l.classList.remove('active'); });
+    event.target.classList.add('active');
+  }
+
+  window.addEventListener('scroll', function() {
+    var sections = ['home', 'markets', 'workforce', 'impact', 'partner'];
+    var links = document.querySelectorAll('.nav-link');
+    var cur = 'home';
+    sections.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 100) cur = id;
+    });
+    links.forEach(function(l, i) {
+      l.classList.toggle('active', sections[i] === cur);
+    });
+  });
+</script>
+</body>
+</html>
